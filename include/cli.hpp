@@ -355,7 +355,7 @@ class CLI {
 
         std::vector<std::string> getAllValuesOf(const std::initializer_list<std::string>& flag, int limit = -1) const
         {
-            return getAllValuesOf(std::vector<std::string>(flag));
+            return getAllValuesOf(std::vector<std::string>(flag), limit);
         }
 
         std::vector<std::string> getAllValuesOf(const std::vector<std::string>& flag, int limit = -1) const
