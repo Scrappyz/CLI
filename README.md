@@ -1,5 +1,21 @@
 ## CLI
-The CLI is a lightweight header-only command-line parsing library that aims to simplify the development of console applications.
+The CLI is a lightweight command-line parsing library in C++ that aims to simplify the development of console applications.
+
+## Table Of Contents
+- [CLI](#cli)
+- [Table Of Contents](#table-of-contents)
+- [Features](#features)
+- [Dependencies](#dependencies)
+  - [Minimum C++ Version](#minimum-c-version)
+  - [Includes](#includes)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Documentation](#documentation)
+
+## Features
+- **Customisable Subcommands:** You can declare the available subcommands of your application
+- **Customisable Flags:** You can declare the available flags each subcommand can use
+- **Extractable Values:** Easily extract the values of your command-line arguments
 
 ## Dependencies
 ### Minimum C++ Version
@@ -10,6 +26,12 @@ The CLI is a lightweight header-only command-line parsing library that aims to s
 - [\<vector>](https://en.cppreference.com/w/cpp/container/vector)
 - [\<unordered_set>](https://en.cppreference.com/w/cpp/header/unordered_set)
 - [\<unordered_map>](https://en.cppreference.com/w/cpp/header/unordered_map)
+
+## Installation
+CLI is a header-only library so all you need to do is:
+1. Download `cli.hpp` in [releases](https://github.com/Scrappyz/CLI/releases)
+2. Place `cli.hpp` in the include folder of your project
+3. Include the `cli.hpp` header in your code
 
 ## Usage
 ```
@@ -72,3 +94,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 ```
+
+## Documentation
+Additional documentation is available here:
+- [CLI Library](docs/CLI/)
+- [Tutorials](docs/Tutorials/)
