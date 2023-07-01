@@ -1,9 +1,9 @@
 ## CLI
 The CLI is a lightweight command-line parsing library in C++ that aims to simplify the development of console applications.
 
+<!-- omit in toc -->
 ## Table Of Contents
 - [CLI](#cli)
-- [Table Of Contents](#table-of-contents)
 - [Features](#features)
 - [Dependencies](#dependencies)
   - [Minimum C++ Version](#minimum-c-version)
