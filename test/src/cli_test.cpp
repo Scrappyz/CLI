@@ -158,7 +158,7 @@ TEST(setValidFlags, duplicate_flags)
     cli.setArguments({"MyProgram", "--flag=value", "--flag"});
     cli.setValidFlags({"--flag"});
     EXPECT_EQ(cli.getFlagPosition("--flag"), 2);
-    EXPECT_EQ(cli.getValuesOf("--flag"), vector<string>());
+    EXPECT_EQ(cli.getAllValuesOf("--flag"), vector<string>());
 }
 
 TEST(setValidFlags, flags_with_invalid_prefix)
@@ -246,16 +246,49 @@ TEST(getArgumentAt, concatenation)
     EXPECT_EQ(cli.getArgumentAt(3, 2), "");
 }
 
-TEST(getValuesOf, general)
+TEST(getValueOf, general)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "--flag=value"});
+    cli.setValidFlags({"--flag"});
+    EXPECT_EQ(cli.getValueOf("--flag"), "value");
+    EXPECT_EQ(cli.getValueOf("--flag", 2), "");
+}
+
+TEST(getValueOf, multiple_values)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "remote", "add", "val1", "val2", "--flag", "fval1", "fval2", "-h", "hval1", "hval2", "hval3",
+    "-m=mval1", "mval2", "mval3", "-f", "ffval1", "ffval2"});
+    cli.setValidSubcommands({"remote add"});
+    cli.setValidFlags("remote add", {"--flag", "-h", "-m", "-f"});
+    EXPECT_EQ(cli.getValueOf(), "val1");
+    EXPECT_EQ(cli.getValueOf(1), "val1");
+    EXPECT_EQ(cli.getValueOf(2), "val2");
+    EXPECT_EQ(cli.getValueOf(3), "");
+    EXPECT_EQ(cli.getValueOf("--flag"), "fval1");
+    EXPECT_EQ(cli.getValueOf("--flag", 2), "fval2");
+    EXPECT_EQ(cli.getValueOf("-h"), "hval1");
+    EXPECT_EQ(cli.getValueOf("-h", 2), "hval2");
+    EXPECT_EQ(cli.getValueOf("-h", 3), "hval3");
+    EXPECT_EQ(cli.getValueOf("-m"), "mval1");
+    EXPECT_EQ(cli.getValueOf("-m", 2), "mval2");
+    EXPECT_EQ(cli.getValueOf("-m", 3), "mval3");
+    EXPECT_EQ(cli.getValueOf({"-f", "--flag"}), "ffval1");
+    EXPECT_EQ(cli.getValueOf({"--flag", "-f"}), "fval1");
+
+}
+
+TEST(getAllValuesOf, general)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "--flag=value"});
     cli.setValidFlags({"--flag"});
     vector<string> flag_val = {"value"};
-    EXPECT_EQ(cli.getValuesOf("--flag"), flag_val);
+    EXPECT_EQ(cli.getAllValuesOf("--flag"), flag_val);
 }
 
-TEST(getValuesOf, multiple_values)
+TEST(getAllValuesOf, multiple_values)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "remote", "add", "val1", "val2", "--flag", "fval1", "fval2", "-h", "hval1", "hval2", "hval3",
@@ -263,36 +296,36 @@ TEST(getValuesOf, multiple_values)
     cli.setValidSubcommands({"remote add"});
     cli.setValidFlags("remote add", {"--flag", "-h", "-m"});
     vector<string> expected_values = {"val1", "val2"};
-    EXPECT_EQ(cli.getValuesOf("remote add"), expected_values);
+    EXPECT_EQ(cli.getAllValuesOf("remote add"), expected_values);
     expected_values = {"fval1", "fval2"};
-    EXPECT_EQ(cli.getValuesOf("--flag"), expected_values);
+    EXPECT_EQ(cli.getAllValuesOf("--flag"), expected_values);
     expected_values = {"hval1", "hval2"};
-    EXPECT_EQ(cli.getValuesOf("-h", 2), expected_values);
+    EXPECT_EQ(cli.getAllValuesOf("-h", 2), expected_values);
     expected_values = {"mval1", "mval2", "mval3"};
-    EXPECT_EQ(cli.getValuesOf("-m"), expected_values);
+    EXPECT_EQ(cli.getAllValuesOf("-m"), expected_values);
     expected_values = {"mval1"};
-    EXPECT_EQ(cli.getValuesOf("-m", 1), expected_values);
+    EXPECT_EQ(cli.getAllValuesOf("-m", 1), expected_values);
 }
 
-TEST(getValuesOf, no_value)
+TEST(getAllValuesOf, no_value)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "add"});
     cli.setValidSubcommands({"add"});
     vector<string> expected_values;
-    EXPECT_EQ(cli.getValuesOf("add"), expected_values);
+    EXPECT_EQ(cli.getAllValuesOf("add"), expected_values);
 
     cli.setArguments({"MyProgram", "add", "val1"});
     expected_values = {};
-    EXPECT_EQ(cli.getValuesOf("add", 0), expected_values);
+    EXPECT_EQ(cli.getAllValuesOf("add", 0), expected_values);
 
     cli.setArguments({"MyProgram", "add", "-f", "val1"});
     cli.setValidFlags({"-f"});
     expected_values = {};
-    EXPECT_EQ(cli.getValuesOf("-f", 0), expected_values);
+    EXPECT_EQ(cli.getAllValuesOf("-f", 0), expected_values);
 }
 
-TEST(getFlagValues, general)
+TEST(getActiveFlagsAndValues, general)
 {
     unordered_map<string, vector<string>> expected_values;
     CLI cli;
@@ -301,15 +334,15 @@ TEST(getFlagValues, general)
     cli.setValidFlags("remote add", {"--flag", "-h", "--help"});
 
     expected_values = {{"", {"val1", "val2"}}, {"--flag", {"fval1", "fval2"}}, {"-h", {"hval1", "hval2"}}};
-    EXPECT_EQ(cli.getFlagValues(), expected_values);
+    EXPECT_EQ(cli.getActiveFlagsAndValues(), expected_values);
 
     cli.setArguments({"MyProgram", "val1", "val2", "--flag=fval1", "fval2", "-h", "hval1", "hval2"});
     cli.setValidFlags({"--flag", "-h", "--help"});
-    EXPECT_EQ(cli.getFlagValues(), expected_values);
+    EXPECT_EQ(cli.getActiveFlagsAndValues(), expected_values);
 
     cli.setArguments({"MyProgram", "--flag=fval1", "fval2", "-h", "hval1", "hval2"});
     expected_values = {{"", {}}, {"--flag", {"fval1", "fval2"}}, {"-h", {"hval1", "hval2"}}};
-    EXPECT_EQ(cli.getFlagValues(), expected_values);
+    EXPECT_EQ(cli.getActiveFlagsAndValues(), expected_values);
 }
 
 TEST(checkers, general)
