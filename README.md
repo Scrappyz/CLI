@@ -14,7 +14,7 @@ The CLI is a lightweight command-line parsing library in C++ that aims to simpli
 
 ## Features
 - **Customisable Subcommands:** You can declare the available subcommands of your application
-- **Customisable Flags:** You can declare the available flags each subcommand can use
+- **Customisable Flags:** You can declare the available flags for each subcommand
 - **Extractable Values:** Easily extract the values of your command-line arguments
 
 ## Dependencies
