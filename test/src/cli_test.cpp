@@ -92,7 +92,7 @@ TEST(setValidFlags, general)
 
     cli.setArguments({"MyProgram", "pull", "jim", "hoe", "-g", "value"});
     EXPECT_EQ(cli.getActiveSubcommand(), "pull jim hoe");
-    cli.setValidFlags("pull jim hoe", {"-f"});
+    EXPECT_THROW(cli.setValidFlags("pull jim hoe", {"-f"}), CLIException);
     EXPECT_EQ(cli.isValidFlag("-f"), true);
     EXPECT_EQ(cli.isFlagActive("-f"), false);
 }
@@ -108,6 +108,7 @@ TEST(setValidFlags, multiple_single_flags)
     EXPECT_EQ(cli.getFlagPosition("-v"), 1);
     EXPECT_EQ(cli.getFlagPosition("--help"), 2);
 
+    cli.clear();
     cli.setArguments({"MyProgram", "-hmv", "-gc", "--hello"});
     cli.setValidFlags({"-h", "-m", "-v", "-g", "-c", "--hello"});
     EXPECT_EQ(cli.getFlagPosition("-h"), 1);
@@ -116,6 +117,23 @@ TEST(setValidFlags, multiple_single_flags)
     EXPECT_EQ(cli.getFlagPosition("-g"), 2);
     EXPECT_EQ(cli.getFlagPosition("-c"), 2);
     EXPECT_EQ(cli.getFlagPosition("--hello"), 3);
+
+    cli.clear();
+    cli.setArguments({"MyProgram", "-hmvx", "-gc", "--hello"});
+    EXPECT_THROW(cli.setValidFlags({"-h", "-m", "-v", "-g", "-c", "--hello"}), CLIException);
+}
+
+TEST(setValidFlags, duplicate_multiple_single_flags)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "-uvv", "hello"});
+    cli.setValidFlags({"-h", "-u", "-v"});
+    EXPECT_EQ(cli.getFlagPosition("-h"), -1);
+    EXPECT_EQ(cli.getFlagPosition("-u"), 1);
+    EXPECT_EQ(cli.getFlagPosition("-v"), 1);
+
+    cli.setArguments({"MyProgram", "-uvv", "-v", "hello"});
+    EXPECT_EQ(cli.getFlagPosition("-v"), 2);
 }
 
 TEST(setValidFlags, substring_in_another_flag)
@@ -155,6 +173,7 @@ TEST(setValidFlags, duplicate_flags)
     cli.setValidFlags({"--help"});
     EXPECT_EQ(cli.getFlagPosition("--help"), 2);
 
+    cli.clear();
     cli.setArguments({"MyProgram", "--flag=value", "--flag"});
     cli.setValidFlags({"--flag"});
     EXPECT_EQ(cli.getFlagPosition("--flag"), 2);
@@ -168,6 +187,25 @@ TEST(setValidFlags, flags_with_invalid_prefix)
     EXPECT_THROW(cli.setValidFlags({"--help", "/h"}), CLIException);
     EXPECT_THROW(cli.setValidFlags({"---help"}), CLIException);
     EXPECT_THROW(cli.setValidFlags({"money"}), CLIException);
+}
+
+TEST(setValidFlags, multiple_single_flag_initialization)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "-hmv"});
+    EXPECT_THROW(cli.setValidFlags({"-hmv"}), CLIException);
+    EXPECT_THROW(cli.setValidFlags({"-help"}), CLIException);
+}
+
+TEST(setValidFlags, invalid_flags)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "-hel-lo", "stuff"});
+    EXPECT_THROW(cli.setValidFlags({"-h", "-e", "-o"}), CLIException);
+
+    cli.clear();
+    cli.setValidFlags({"-h", "-e", "-o"});
+    EXPECT_THROW(cli.setArguments({"MyProgram", "-hel-lo", "stuff"}), CLIException);
 }
 
 TEST(setValidFlags, edge_cases)
@@ -276,6 +314,23 @@ TEST(getValueOf, multiple_values)
     EXPECT_EQ(cli.getValueOf("-m", 3), "mval3");
     EXPECT_EQ(cli.getValueOf({"-f", "--flag"}), "ffval1");
     EXPECT_EQ(cli.getValueOf({"--flag", "-f"}), "fval1");
+
+    cli.clear();
+    cli.setArguments({"MyProgram", "-hmv=value", "value1", "value2"});
+    cli.setValidFlags({"-h", "-m", "-v"});
+    EXPECT_EQ(cli.getValueOf("-h"), "value");
+    EXPECT_EQ(cli.getValueOf("-m"), "value");
+    EXPECT_EQ(cli.getValueOf("-v"), "value");
+    EXPECT_EQ(cli.getValueOf("-h", 2), "value1");
+    EXPECT_EQ(cli.getValueOf("-m", 2), "value1");
+    EXPECT_EQ(cli.getValueOf("-v", 2), "value1");
+}
+
+TEST(getValueOf, no_value)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "-hmv"});
+    cli.setValidFlags({"-h", "-m", "-v"});
 }
 
 TEST(getAllValuesOf, general)
@@ -394,10 +449,7 @@ TEST(checkers, general)
     EXPECT_EQ(cli.isFlagActive("-g"), true);
     EXPECT_EQ(cli.getFlagPosition("-g"), 2);
 
-    cli.setValidFlags("init", {"-h"});
-    EXPECT_EQ(cli.isValidFlag("-g"), false); 
-    EXPECT_THROW(cli.isFlagActive("-g"), CLIException); // "-g" flag no longer exists
-    EXPECT_THROW(cli.getFlagPosition("-g"), CLIException);
+    EXPECT_THROW(cli.setValidFlags("init", {"-h"}), CLIException); // "-h" is not in argument list
 }
 
 TEST(clear, general)

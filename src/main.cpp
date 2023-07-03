@@ -5,8 +5,10 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    string str = "-h=";
-    cout << str.find_first_of('=', 2) << endl;
-    cout << str.substr(3, 6) << endl;
+    CLI cli;
+    cli.setArguments({"MyProgram", "--help", "--help"});
+    cli.setValidFlags({"--help"});
+    cli.setValidFlags({"--flag"});
+    
     return 0;
 }

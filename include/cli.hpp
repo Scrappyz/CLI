@@ -64,14 +64,17 @@ class CLI {
             }
 
             for(int i = start; i < args.size(); i++) { 
-                if(isFlagFormat(args[i])) {
+                std::string prefix = getFlagPrefix(args[i]);
+                if(!prefix.empty()) {
                     std::string flag;
                     std::string temp = trim(args[i]);
-                    bool is_flag_word = (args[i][0] == '-' && args[i][1] == '-');
+                    bool is_flag_word = (prefix.size() == 2);
 
                     if(is_flag_word) {
                         if(isValidFlag(temp)) {
                             subcommands.at(subcmd)[temp] = i;
+                        } else {
+                            throw CLIException("[Error][setFlags] Flag \"" + flag + "\" is not a valid flag of the \"" + active_subcommand + "\"");
                         }
                     } else {
                         int j = 0;
@@ -82,9 +85,12 @@ class CLI {
 
                         while(j < temp.size()) {
                             flag.push_back(temp[j]);
-                            if(!isFlagPrefix(temp[j]) && isValidFlag(flag)) {
+                            bool is_valid = isValidFlag(flag);
+                            if(!isFlagPrefix(temp[j]) && is_valid) {
                                 subcommands.at(subcmd)[flag] = i;
                                 flag.pop_back();
+                            } else if(!is_valid) {
+                                throw CLIException("[Error][setFlags] Flag \"" + flag + "\" is not a valid flag of the \"" + active_subcommand + "\"");
                             }
                             j++;
                         }
@@ -142,14 +148,19 @@ class CLI {
             return ch == '-';
         }
 
-        bool isFlagFormat(const std::string& flag) const // checks if a string is in a flag format
+        std::string getFlagPrefix(const std::string& flag) const // checks if a string is in a flag format
         {
-            std::string temp;
+            std::string result;
             for(int i = 0; isFlagPrefix(flag[i]); i++) {
-                temp.push_back(flag[i]);
+                result.push_back(flag[i]);
             }
-            return !temp.empty() && temp.size() <= 2 && temp.size() != flag.size();
+            return result;
         } 
+
+        bool hasFlagPrefix(const std::string& flag) const
+        {
+            return getFlagPrefix(flag).size() > 0;
+        }
 
     public:
         CLI() : args(), subcommands(), active_subcommand(), active_subcommand_end_pos(), max_subcommand_chain_count()
@@ -269,7 +280,10 @@ class CLI {
 
         int getFlagPosition(const std::string& flag) const
         {
-            return getFlagPosition(active_subcommand, flag);
+            if(subcommands.at(active_subcommand).count(flag) < 1) {
+                throw CLIException("[Error][" + std::string(__func__) + "] \"" + flag + "\" is not a valid flag");
+            }
+            return subcommands.at(active_subcommand).at(flag);
         }
 
         int getFlagPosition(const std::string& subcmd, const std::string& flag) const
@@ -282,27 +296,27 @@ class CLI {
             return subcommands.at(subcmd).at(flag);
         }
 
-        std::string getValueOf(int occurance = 1)
+        std::string getValueOf(int occurance = 1, bool error = false)
         {
-            return getValueOf(active_subcommand, occurance);
+            return getValueOf(active_subcommand, occurance, error);
         }
 
-        std::string getValueOf(const std::initializer_list<std::string>& flag, int occurance = 1)
+        std::string getValueOf(const std::initializer_list<std::string>& flag, int occurance = 1, bool error = false)
         {
-            return getValueOf(std::vector<std::string>(flag), occurance);
+            return getValueOf(std::vector<std::string>(flag), occurance, error);
         }
 
-        std::string getValueOf(const std::vector<std::string>& flag, int occurance = 1)
+        std::string getValueOf(const std::vector<std::string>& flag, int occurance = 1, bool error = false)
         {
             for(int i = 0; i < flag.size(); i++) {
                 if(isFlagActive(flag[i])) {
-                    return getValueOf(flag[i], occurance);
+                    return getValueOf(flag[i], occurance, error);
                 }
             }
             return std::string();
         }
 
-        std::string getValueOf(const std::string& flag, int occurance = 1)
+        std::string getValueOf(const std::string& flag, int occurance = 1, bool error = false)
         {
             if(occurance < 1) {
                 occurance = 1;
@@ -325,7 +339,7 @@ class CLI {
                 } 
 
                 for(int i = flag_pos + 1; i < args.size(); i++) {
-                    if(isFlagFormat(args[i])) {
+                    if(hasFlagPrefix(args[i])) {
                         break;
                     } else if(counter == occurance) {
                         return args[i];
@@ -334,7 +348,7 @@ class CLI {
                 }
             } else if(flag == active_subcommand) {
                 for(int i = active_subcommand_end_pos + 1; i < args.size(); i++) {
-                    if(isFlagFormat(args[i])) {
+                    if(hasFlagPrefix(args[i])) {
                         break;
                     } else if(counter == occurance) {
                         return args[i];
@@ -345,6 +359,9 @@ class CLI {
                 throw CLIException("[Error][getValueOf] \"" + flag + "\" is neither an active flag or subcommand");
             }
 
+            if(error) {
+                throw CLIException("[Error][getValueOf] No value extracted");
+            }
             return std::string();
         }
 
@@ -388,14 +405,14 @@ class CLI {
                 } 
                 
                 for(int i = flag_pos + 1; i < args.size(); i++) {
-                    if(isFlagFormat(args[i]) || limit > 0 && values.size() >= limit) {
+                    if(hasFlagPrefix(args[i]) || limit > 0 && values.size() >= limit) {
                         break;
                     }
                     values.push_back(args[i]);
                 }
             } else if(flag == active_subcommand) {
                 for(int i = active_subcommand_end_pos + 1; i < args.size(); i++) {
-                    if(isFlagFormat(args[i]) || limit > 0 && values.size() >= limit) {
+                    if(hasFlagPrefix(args[i]) || limit > 0 && values.size() >= limit) {
                         break;
                     }
                     values.push_back(args[i]);
@@ -481,13 +498,14 @@ class CLI {
             subcommands.at(subcmd).clear(); // clear the old flags of the given subcommand
             for(int i = 0; i < valid_flags.size(); i++) {
                 std::string flag = trim(valid_flags[i]);
+                std::string prefix = getFlagPrefix(flag);
 
-                if(flag.size() < 2) {
-                    subcommands.at(subcmd).clear();
-                    throw CLIException("[Error][" + std::string(__func__) + "] \"" + flag + "\" is not a valid flag");
-                } else if(!isFlagFormat(flag)) {
+                if(prefix.empty() || prefix.size() > 2) {
                     subcommands.at(subcmd).clear();
                     throw CLIException("[Error][" + std::string(__func__) + "] \"" + flag + "\" does not have a proper prefix");
+                } else if(prefix.size() == 1 && flag.size() > 2) {
+                    subcommands.at(subcmd).clear();
+                    throw CLIException("[Error][" + std::string(__func__) + "] \"" + flag + "\" has prefix for a single character format");
                 }
 
                 subcommands.at(subcmd).insert({flag, -1});
