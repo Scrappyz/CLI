@@ -467,6 +467,15 @@ TEST(checkers, general)
     EXPECT_THROW(cli.setValidFlags("init", {"-h"}), CLIException); // "-h" is not in argument list
 }
 
+TEST(isFlagActive, multiple_flags)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "remote", "add", "-us", "hello", "--substring", "hi"});
+    cli.setValidFlags({"-u", "--unscramble", "-s", "--substring"});
+    EXPECT_EQ(cli.isFlagActive({"-u", "-s", "--substring"}), true);
+    
+}
+
 TEST(clear, general)
 {
     vector<string> expected_args;
