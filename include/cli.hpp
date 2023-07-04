@@ -338,7 +338,7 @@ class CLI {
                     return getValueOf(flag[i], occurance);
                 }
             }
-            return std::string();
+            throw CLIException("[Error][getValueOf] None of the flags are in the argument list");
         }
 
         std::string getValueOf(const std::string& flag, int occurance = 1)
@@ -351,7 +351,7 @@ class CLI {
             if(isValidFlag(flag)) {
                 int flag_pos = subcommands.at(active_subcommand).at(flag);
                 if(flag_pos < 0) {
-                    return std::string();
+                    throw CLIException("[Error][getValueOf] Flag \"" + flag + "\" is not in the argument list");
                 }
 
                 std::string temp = args[flag_pos];
@@ -404,7 +404,7 @@ class CLI {
                     return getAllValuesOf(flag[i], limit);
                 }
             }
-            return std::vector<std::string>();
+            throw CLIException("[Error][getAllValuesOf] None of the flags is in the argument list");
         }
 
         std::vector<std::string> getAllValuesOf(const std::string& flag, int limit = -1) const
