@@ -296,27 +296,27 @@ class CLI {
             return subcommands.at(subcmd).at(flag);
         }
 
-        std::string getValueOf(int occurance = 1, bool error = false)
+        std::string getValueOf(int occurance = 1)
         {
-            return getValueOf(active_subcommand, occurance, error);
+            return getValueOf(active_subcommand, occurance);
         }
 
-        std::string getValueOf(const std::initializer_list<std::string>& flag, int occurance = 1, bool error = false)
+        std::string getValueOf(const std::initializer_list<std::string>& flag, int occurance = 1)
         {
-            return getValueOf(std::vector<std::string>(flag), occurance, error);
+            return getValueOf(std::vector<std::string>(flag), occurance);
         }
 
-        std::string getValueOf(const std::vector<std::string>& flag, int occurance = 1, bool error = false)
+        std::string getValueOf(const std::vector<std::string>& flag, int occurance = 1)
         {
             for(int i = 0; i < flag.size(); i++) {
                 if(isFlagActive(flag[i])) {
-                    return getValueOf(flag[i], occurance, error);
+                    return getValueOf(flag[i], occurance);
                 }
             }
             return std::string();
         }
 
-        std::string getValueOf(const std::string& flag, int occurance = 1, bool error = false)
+        std::string getValueOf(const std::string& flag, int occurance = 1)
         {
             if(occurance < 1) {
                 occurance = 1;
@@ -359,9 +359,6 @@ class CLI {
                 throw CLIException("[Error][getValueOf] \"" + flag + "\" is neither an active flag or subcommand");
             }
 
-            if(error) {
-                throw CLIException("[Error][getValueOf] No value extracted");
-            }
             return std::string();
         }
 
