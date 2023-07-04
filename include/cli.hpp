@@ -351,7 +351,7 @@ class CLI {
             if(isValidFlag(flag)) {
                 int flag_pos = subcommands.at(active_subcommand).at(flag);
                 if(flag_pos < 0) {
-                    throw CLIException("[Error][getAllValuesOf] Flag \"" + flag + "\" is not in the argument list");
+                    return std::string();
                 }
 
                 std::string temp = args[flag_pos];
