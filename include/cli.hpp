@@ -554,22 +554,27 @@ class CLI {
             return active_subcommand.empty();
         }
 
+        bool isFlagActive(const std::initializer_list<std::string>& flag) const
+        {
+            return isFlagActive(std::vector<std::string>(flag));
+        }
+
+        bool isFlagActive(const std::vector<std::string>& flag) const
+        {
+            for(int i = 0; i < flag.size(); i++) {
+                if(isFlagActive(flag[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         bool isFlagActive(const std::string& flag) const
         {
             if(subcommands.at(active_subcommand).count(flag) < 1) {
-                throw CLIException("[Error][" + std::string(__func__) + "] \"" + flag + "\" is not a valid flag");
+                throw CLIException("[Error][" + std::string(__func__) + "] \"" + flag + "\" is not a valid flag of \"" + active_subcommand + "\"");
             }
             return subcommands.at(active_subcommand).at(flag) >= 0;
-        }
-
-        bool isFlagActive(const std::string& subcmd, const std::string& flag) const // checks if a flag is initialized
-        {
-            if(!isValidSubcommand(subcmd)) {
-                throw CLIException("[Error][" + std::string(__func__) + "] \"" + subcmd + "\" is not a valid subcommand");
-            } else if(subcommands.at(subcmd).count(flag) < 1) {
-                throw CLIException("[Error][" + std::string(__func__) + "] \"" + flag + "\" is not a valid flag");
-            }
-            return subcommands.at(subcmd).at(flag) >= 0;
         }
 
         bool isValidFlag(const std::string& flag) const 

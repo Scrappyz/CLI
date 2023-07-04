@@ -50,7 +50,7 @@ TEST(setArguments, general)
     EXPECT_EQ(cli.getActiveSubcommand(), "remote");
     EXPECT_EQ(cli.isFlagActive("-h"), true);
     cli.setArguments({"MyProgram", "remote", "add", "--help"});
-    EXPECT_EQ(cli.isFlagActive("remote", "-h"), false);
+    EXPECT_THROW(cli.isFlagActive("-h"), CLIException);
     EXPECT_EQ(cli.isFlagActive("--help"), true);
 }
 
