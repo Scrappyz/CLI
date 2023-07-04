@@ -271,6 +271,21 @@ TEST(initialization, order)
     EXPECT_EQ(cli.getFlags("remote add"), expected_flags);
 }
 
+TEST(getProgramName, general)
+{
+    CLI cli;
+    cli.setArguments({"myprogram", "subcommand"});
+    EXPECT_EQ(cli.getProgramName(), "myprogram");
+    cli.setArguments({"myprogram.exe", "subcommand"});
+    EXPECT_EQ(cli.getProgramName(), "myprogram");
+    cli.setArguments({"path/to/myprogram", "subcommand"});
+    EXPECT_EQ(cli.getProgramName(), "myprogram");
+    cli.setArguments({"path/to/myprogram.exe", "subcommand"});
+    EXPECT_EQ(cli.getProgramName(), "myprogram");
+    cli.setArguments({"my.program.exe"});
+    EXPECT_EQ(cli.getProgramName(), "my.program");
+}
+
 TEST(getArgumentAt, concatenation)
 {
     CLI cli;

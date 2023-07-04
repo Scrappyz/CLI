@@ -181,6 +181,31 @@ class CLI {
         }
 
         // Getters
+        std::string getProgramName() const
+        {
+            if(args.empty()) {
+                throw CLIException("[Error][getProgramName] Argument list is empty");
+            }
+
+            std::string name;
+            int start = 0;
+            int end = args[0].size()-1;
+            for(int i = args[0].size()-1; i >= 0; i--) {
+                if(args[0][i] == '.' && end >= args[0].size()-1) {
+                    end = i - 1;
+                } else if(args[0][i] == '\\' || args[0][i] == '/') {
+                    start = i + 1;
+                    break;
+                }
+            }
+
+            for(int i = start; i <= end; i++) {
+                name.push_back(args[0][i]);
+            }
+
+            return name;
+        }
+
         const std::vector<std::string>& getArguments() const
         {
             return args;

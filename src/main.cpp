@@ -31,14 +31,8 @@ string check(const string& flag, bool error)
 int main(int argc, char** argv)
 {
     CLI cli;
-    cli.setArguments({"MyProgram", "remote", "add", "val1", "val2", "--flag", "fval1", "fval2", "-h", "hval1", "hval2", "hval3",
-    "-m=mval1", "mval2", "mval3", "-f", "ffval1", "ffval2"});
-    cli.setValidSubcommands({"remote add"});
-    cli.setValidFlags("remote add", {"--flag", "-h", "-m", "-f"});
-
-    cout << cli.getValueOf() << endl;
-    cout << cli.getValueOf("--flag") << endl;
-    cout << cli.getValueOf({"--flag"}) << endl;
+    cli.setArguments({"MyProgram"});
+    cout << cli.getProgramName() << endl;
     
     return 0;
 }
