@@ -321,12 +321,12 @@ class CLI {
             return subcommands.at(subcmd).at(flag);
         }
 
-        std::string getValueOf(int occurance = 1)
+        std::string getValueOf(int occurance = 1) const
         {
             return getValueOf(active_subcommand, occurance);
         }
 
-        std::string getValueOf(const std::initializer_list<std::string>& flag, int occurance = 1)
+        std::string getValueOf(const std::initializer_list<std::string>& flag, int occurance = 1) const
         {
             for(const auto& i : flag) {
                 if(isFlagActive(i)) {
@@ -336,7 +336,7 @@ class CLI {
             throw CLIException("[Error][getValueOf] None of the flags are in the argument list");
         }
 
-        std::string getValueOf(const std::vector<std::string>& flag, int occurance = 1)
+        std::string getValueOf(const std::vector<std::string>& flag, int occurance = 1) const
         {
             for(int i = 0; i < flag.size(); i++) {
                 if(isFlagActive(flag[i])) {
@@ -346,7 +346,7 @@ class CLI {
             throw CLIException("[Error][getValueOf] None of the flags are in the argument list");
         }
 
-        std::string getValueOf(const std::string& flag, int occurance = 1)
+        std::string getValueOf(const std::string& flag, int occurance = 1) const
         {
             if(occurance < 1) {
                 occurance = 1;
