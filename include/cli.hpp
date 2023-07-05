@@ -328,7 +328,12 @@ class CLI {
 
         std::string getValueOf(const std::initializer_list<std::string>& flag, int occurance = 1)
         {
-            return getValueOf(std::vector<std::string>(flag), occurance);
+            for(const auto& i : flag) {
+                if(isFlagActive(i)) {
+                    return getValueOf(i, occurance);
+                }
+            }
+            throw CLIException("[Error][getValueOf] None of the flags are in the argument list");
         }
 
         std::string getValueOf(const std::vector<std::string>& flag, int occurance = 1)
@@ -394,7 +399,12 @@ class CLI {
 
         std::vector<std::string> getAllValuesOf(const std::initializer_list<std::string>& flag, int limit = -1) const
         {
-            return getAllValuesOf(std::vector<std::string>(flag), limit);
+            for(const auto& i : flag) {
+                if(isFlagActive(i)) {
+                    return getAllValuesOf(i, limit);
+                }
+            }
+            throw CLIException("[Error][getAllValuesOf] None of the flags is in the argument list");
         }
 
         std::vector<std::string> getAllValuesOf(const std::vector<std::string>& flag, int limit = -1) const
@@ -564,7 +574,12 @@ class CLI {
 
         bool isFlagActive(const std::initializer_list<std::string>& flag) const
         {
-            return isFlagActive(std::vector<std::string>(flag));
+            for(const auto& i : flag) {
+                if(isFlagActive(i)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         bool isFlagActive(const std::vector<std::string>& flag) const

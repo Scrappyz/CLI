@@ -474,6 +474,7 @@ TEST(isFlagActive, multiple_flags)
     cli.setValidFlags({"-u", "--unscramble", "-s", "--substring"});
     EXPECT_EQ(cli.isFlagActive({"-u", "-s", "--substring"}), true);
     EXPECT_EQ(cli.isFlagActive({"-u", "--unscramble"}), true);
+    EXPECT_EQ(cli.isFlagActive({"--unscramble", "--substring"}), true);
     EXPECT_EQ(cli.areFlagsActive({"-u", "-s", "--substring"}), true);
     EXPECT_EQ(cli.areFlagsActive({"-u", "--unscramble", "-s", "--substring"}), false);
 }
