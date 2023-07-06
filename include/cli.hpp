@@ -211,67 +211,6 @@ class CLI {
             return args;
         }
 
-        const std::unordered_map<std::string, std::unordered_map<std::string, int>>& getSubcommands() const
-        {
-            return subcommands;
-        }
-
-        std::unordered_set<std::string> getValidSubcommands() const
-        {
-            std::unordered_set<std::string> valid_subcommands;
-            for(const auto& i : subcommands) {
-                valid_subcommands.insert(i.first);
-            }
-            return valid_subcommands;
-        }
-
-        std::unordered_map<std::string, int> getFlags(std::string subcmd = "") const
-        {
-            if(subcmd.empty()) {
-                subcmd = active_subcommand;
-            }
-
-            return isValidSubcommand(subcmd) ? subcommands.at(subcmd) : throw CLIException("[Error][" + std::string(__func__) + "] \"" + subcmd + "\" is not a valid subcommand");
-        }
-
-        std::unordered_set<std::string> getValidFlags(std::string subcmd = "") const
-        {
-            if(subcmd.empty()) {
-                subcmd = active_subcommand;
-            }
-
-            if(!isValidSubcommand(subcmd)) {
-                throw CLIException("[Error][" + std::string(__func__) + "] \"" + subcmd + "\" is not a valid subcommand");
-            }
-
-            std::unordered_set<std::string> flags;
-            for(const auto& i : subcommands.at(subcmd)) {
-                flags.insert(i.first);
-            }
-
-            return flags;
-        }
-
-        std::unordered_set<std::string> getActiveFlags(std::string subcmd = "") const
-        {
-            if(subcmd.empty()) {
-                subcmd = active_subcommand;
-            }
-
-            if(!isValidSubcommand(subcmd)) {
-                throw CLIException("[Error][" + std::string(__func__) + "] \"" + subcmd + "\" is not a valid subcommand");
-            }
-
-            std::unordered_set<std::string> flags;
-            for(const auto& i : subcommands.at(subcmd)) {
-                if(i.second >= 0) {
-                    flags.insert(i.first);
-                }
-            }
-
-            return flags;
-        }
-
         const std::string& getActiveSubcommand() const
         {
             return active_subcommand;
@@ -311,14 +250,78 @@ class CLI {
             return subcommands.at(active_subcommand).at(flag);
         }
 
-        int getFlagPosition(const std::string& subcmd, const std::string& flag) const
+        std::unordered_set<std::string> getValidSubcommands() const
         {
+            std::unordered_set<std::string> valid_subcommands;
+            for(const auto& i : subcommands) {
+                valid_subcommands.insert(i.first);
+            }
+            return valid_subcommands;
+        }
+
+        std::unordered_set<std::string> getValidFlags(std::string subcmd = "") const
+        {
+            if(subcmd.empty()) {
+                subcmd = active_subcommand;
+            }
+
             if(!isValidSubcommand(subcmd)) {
                 throw CLIException("[Error][" + std::string(__func__) + "] \"" + subcmd + "\" is not a valid subcommand");
-            } else if(subcommands.at(subcmd).count(flag) < 1) {
-                throw CLIException("[Error][" + std::string(__func__) + "] \"" + flag + "\" is not a valid flag");
             }
-            return subcommands.at(subcmd).at(flag);
+
+            std::unordered_set<std::string> flags;
+            for(const auto& i : subcommands.at(subcmd)) {
+                flags.insert(i.first);
+            }
+
+            return flags;
+        }
+
+        std::unordered_set<std::string> getActiveFlags() const
+        {
+            std::unordered_set<std::string> flags;
+            for(const auto& i : subcommands.at(active_subcommand)) {
+                if(i.second >= 0) {
+                    flags.insert(i.first);
+                }
+            }
+
+            return flags;
+        }
+
+        std::unordered_map<std::string, int> getActiveFlagsAndPositions() const
+        {
+            std::unordered_map<std::string, int> flags;
+            for(const auto& i : subcommands.at(active_subcommand)) {
+                if(i.second >= 0) {
+                    flags.insert(i);
+                }
+            }
+
+            return flags;
+        }
+
+        std::string getActiveFlagIn(const std::vector<std::string>& flags) const
+        {
+            for(int i = 0; i < flags.size(); i++) {
+                if(isFlagActive(flags[i])) {
+                    return flags[i];
+                }
+            }
+
+            return std::string();
+        }
+
+        std::vector<std::string> getAllActiveFlagsIn(const std::vector<std::string>& flags) const 
+        {
+            std::vector<std::string> active_flags;
+            for(int i = 0; i < flags.size(); i++) {
+                if(isFlagActive(flags[i])) {
+                    active_flags.push_back(flags[i]);
+                }
+            }
+
+            return active_flags;
         }
 
         std::string getValueOf(int occurance = 1) const
