@@ -299,6 +299,36 @@ TEST(getArgumentAt, concatenation)
     EXPECT_EQ(cli.getArgumentAt(3, 2), "");
 }
 
+TEST(getActiveFlagIn, general)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "-h", "hi", "-v"});
+    cli.setValidFlags({"-h", "--help", "-v", "--verbose"});
+    EXPECT_EQ(cli.getActiveFlagIn({"-h", "--help"}), "-h");
+    EXPECT_EQ(cli.getActiveFlagIn({"-v", "--verbose"}), "-v");
+}
+
+TEST(getAllActiveFlagsIn, general)
+{
+    vector<string> expected_flags = {"-h", "--help", "-v"};
+
+    CLI cli;
+    cli.setArguments({"MyProgram", "-h", "--help", "-v", "hi"});
+    cli.setValidFlags({"-h", "--help", "-v", "--verbose"});
+    EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v"}), expected_flags);
+    EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v", "--verbose"}), expected_flags);
+}
+
+TEST(getAllActiveFlagsIn, multiple_flags)
+{
+    vector<string> expected_flags = {"-h", "--help"};
+    
+    CLI cli;
+    cli.setArguments({"MyProgram", "-h", "-h", "--help"});
+    cli.setValidFlags({"-h", "--help", "-v", "--verbose"});
+    EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v", "--verbose"}), expected_flags);
+}
+
 TEST(getValueOf, general)
 {
     CLI cli;
