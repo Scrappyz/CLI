@@ -13,9 +13,10 @@ The CLI is a lightweight command-line parsing library in C++ that aims to simpli
 - [Documentation](#documentation)
 
 ## Features
-- **Customisable Subcommands:** You can declare the available subcommands of your application
-- **Customisable Flags:** You can declare the available flags for each subcommand
-- **Extractable Values:** Easily extract the values of your command-line arguments
+- **Customisable Subcommands:** Declare the available subcommands of your application
+- **Customisable Flags:** Declare the available flags for each subcommand
+- **Extractable Values:** Provides a convenient way to extract the values of command-line arguments
+- **Ease of Use:** Easily accessible and has simple syntax
 
 ## Dependencies
 ### Minimum C++ Version
@@ -34,12 +35,36 @@ CLI is a header-only library so all you need to do is:
 3. Include the `cli.hpp` header in your code
 
 ## Usage
-This is a sample usage of the `CLI` library.
+1. **Pass the command-line arguments:** We first pass the command-line arguments into the `CLI` object to initialize its argument list.
 ```
-#include <iostream>
 #include "cli.hpp"
 
-using namespace std;
+int main(int argc, char* argv[])
+{
+    CLI cli(argc, argv);
+    // more code
+```
+
+2. **Catch Exceptions:** Create a try-catch block that catches a `CLIException` object. (This step is optional)
+```
+#include "cli.hpp"
+int main(int argc, char* argv[])
+{
+    CLI cli(argc, argv);
+    try {
+        // more code
+    } catch(const CLIException& e) {
+        cout << e.what() << endl;
+        return 1;
+    }
+    
+    return 0;
+}
+```
+
+3. **Initialize the valid subcommands and flags:** Each subcommand will have its own set of flags. Use the [setValidSubcommands()]() method to declare the valid subcommands and use [setValidFlags()]() to declare their flags. All flags need to be prefixed with a `-` for single character flags and `--` for string flags. It is important to declare the available subcommands first before setting the available flags to avoid scoping issues. 
+```
+#include "cli.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -49,16 +74,44 @@ int main(int argc, char* argv[])
         cli.setValidSubcommands({"add", "status", "remote add"});
 
         // declare the available flags for each subcommand
-        cli.setValidFlags({"-h", "--help"}); // declare flag for empty subcommand
-        cli.setValidFlags("add", {"-h", "--help", "--path"});
-        cli.setValidFlags("status", {"-h", "--help", "-v", "--verbose"});
-        cli.setValidFlags("remote add", {"-f", "--fetch", "--tags"});
+        cli.setValidFlags({"-h", "--help"}); // flags for empty subcommand
+        cli.setValidFlags("add", {"-h", "--help", "--path"}); // flags for "add" subcommand
+        cli.setValidFlags("status", {"-h", "--help", "-v", "--verbose"}); // flags for "status" subcommand
+        cli.setValidFlags("remote add", {"-f", "--fetch", "--tags"}); // flags for "remote add" subcommand
 
-        string subcmd = cli.getActiveSubcommand(); // the current subcommand
-        string value; // will hold a single value of a flag
-        vector<string> all_values; // will hold all the values of a flag
+        // more code
+    } catch(const CLIException& e) {
+        cout << e.what() << endl;
+        return 1;
+    }
+    
+    return 0;
+}
+```
+
+4. **Use the methods of the `CLI` object to run your program accordingly:** We first store the active subcommand in `subcmd` with [getActiveSubcommand()]() so we can use it to check which subcommand is active. The active subcommand is the subcommand that is currently in the command-line arguments. The variable `value` and `all_values` will be used to store the values of the command-line arguments. Once the subcommand in the command-line arguments has been determined, we can check the flags that are present in the argument list with [isFlagActive()]() and extract its values with either [getValueOf()]() or [getAllValuesOf()]().
+```
+#include "cli.hpp"
+
+int main(int argc, char* argv[])
+{
+    CLI cli(argc, argv);
+    try {
+        // declare the available subcommands in your program
+        cli.setValidSubcommands({"add", "status", "remote add"});
+
+        // declare the available flags for each subcommand
+        cli.setValidFlags({"-h", "--help"}); // flags for empty subcommand
+        cli.setValidFlags("add", {"-h", "--help", "--path"}); // flags for "add" subcommand
+        cli.setValidFlags("status", {"-h", "--help", "-v", "--verbose"}); // flags for "status" subcommand
+        cli.setValidFlags("remote add", {"-f", "--fetch", "--tags"}); // flags for "remote add" subcommand
+
+        std::string subcmd = cli.getActiveSubcommand(); // the current subcommand
+        std::string value; // will hold a single value of a flag
+        std::vector<std::string> all_values; // will hold all the values of a flag
         if(subcmd.empty()) {
             // do stuff with empty subcommand
+
             if(cli.isFlagActive("-h") || cli.isFlagActive("--help")) {
                 // do stuff with the "-h" and "--help" flag
             }   
@@ -74,12 +127,15 @@ int main(int argc, char* argv[])
             }
         } else if(subcmd == "status") {
             // do stuff with "status" subcommand
+
             if(cli.isFlagActive("-v") || cli.isFlagActive("--verbose")) {
                 // do stuff with the "verbose" flag
             }
         } else if(subcmd == "remote add") {
             // do stuff with "remote add" subcommand
-            if(cli.isFlagActive("-f") || cli.isFlagActive("--fetch")) {
+
+            // same as `cli.isFlagActive("-f") || cli.isFlagActive("--fetch")`
+            if(cli.isFlagActive({"-f", "--fetch"})) {
                 // do stuff with "fetch" flag
 
                 // get all the values of "-f" or "--fetch", whichever comes first
@@ -96,55 +152,6 @@ int main(int argc, char* argv[])
     return 0;
 }
 ```
-```
-// declare the available subcommands in your program
-cli.setValidSubcommands({"add", "status", "remote add"});
-
-// declare the available flags for each subcommand
-cli.setValidFlags({"-h", "--help"}); // declare flag for empty subcommand
-cli.setValidFlags("add", {"-h", "--help", "--path"});
-cli.setValidFlags("status", {"-h", "--help", "-v", "--verbose"});
-cli.setValidFlags("remote add", {"-f", "--fetch", "--tags"});
-```
-First we declare the subcommands our program can take with `setValidSubcommands({"list", "of", "subcommands"})` then we declare the flags each subcommand can take with `setValidFlags("subcommand name", {"--list", "--of", "--flags"})`. 
-
-```
-string subcmd = cli.getActiveSubcommand(); // the current subcommand
-string value; // will hold a single value of a flag
-vector<string> all_values; // will hold all the values of a flag
-if(subcmd.empty()) {
-    // do stuff with empty subcommand
-    if(cli.isFlagActive("-h") || cli.isFlagActive("--help")) {
-        // do stuff with the "-h" and "--help" flag
-    }   
-} else if(subcmd == "add") {
-    // do stuff with "add" subcommand
-    if(cli.isFlagActive("--path")) {
-        // do stuff with the "--path" flag
-
-        // get the first value of "--path"
-        value = cli.getValueOf("--path", 1);
-
-        // do stuff with the value
-    }
-} else if(subcmd == "status") {
-    // do stuff with "status" subcommand
-    if(cli.isFlagActive("-v") || cli.isFlagActive("--verbose")) {
-        // do stuff with the "verbose" flag
-    }
-} else if(subcmd == "remote add") {
-    // do stuff with "remote add" subcommand
-    if(cli.isFlagActive("-f") || cli.isFlagActive("--fetch")) {
-        // do stuff with "fetch" flag
-
-        // get all the values of "-f" or "--fetch", whichever comes first
-        all_values = cli.getAllValuesOf({"-f", "--fetch"});
-
-        // do stuff with values
-    }
-}
-```
-We first store the active subcommand in `subcmd` so we can use it to check which subcommand is active. The variable `value` and `all_values` will be used to store the values of the command-line arguments. Once the active subcommand has been determined, we can check the flags that are present in the argument list with `isFlagActive("--flag")` and extract its values with either `getValueOf("--flag")` or `getAllValuesOf("--flag")`.
 
 ## Documentation
 Additional documentation and tutorials on how to use are available here:

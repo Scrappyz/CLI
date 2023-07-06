@@ -1,38 +1,20 @@
 #include <iostream>
-#include "cli.hpp"
+#include <algorithm>
+#include <vector>
 
-using namespace std;
-
-string check()
+void print(const std::vector<std::string>& v)
 {
-    return string("check()");
+    for(int i = 0; i < v.size(); i++) {
+        std::cout << v[i] << std::endl;
+    }
 }
 
-string check(bool error)
+int main()
 {
-    return string("check(bool error)");
-}
+    std::vector<std::string> v = {"getProgramName", "getArguments", "getActiveSubcommand", "getActiveSubcommandEndPosition",
+    "getArgumentAt", "getFlagPosition", "getValidSubcommands", "getValidFlags", "getActiveFlags", "getActiveFlagsAndPositions", 
+    "getActiveFlagIn", "getAllActiveFlagsIn", "getValueOf", "getAllValuesOf", "getActiveFlagsAndValues"};
 
-string check(const char* flag)
-{
-    return string("check(const char* flag)");
-}
-
-string check(const string& flag)
-{
-    return string("check(const string& flag)");
-}
-
-string check(const string& flag, bool error)
-{
-    return string("check(const string& flag, bool error)");
-}
-
-int main(int argc, char** argv)
-{
-    CLI cli;
-    cli.setArguments({"MyProgram"});
-    cout << cli.getProgramName() << endl;
-    
-    return 0;
+    std::sort(v.begin(), v.end());
+    print(v);
 }
