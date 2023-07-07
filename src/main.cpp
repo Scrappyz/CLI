@@ -1,20 +1,17 @@
 #include <iostream>
-#include <algorithm>
-#include <vector>
+#include "cli.hpp"
 
-void print(const std::vector<std::string>& v)
+int main(int argc, char* argv[])
 {
-    for(int i = 0; i < v.size(); i++) {
-        std::cout << v[i] << std::endl;
+    CLI cli(argc, argv);
+    try {
+        cli.setValidSubcommands({"add", "status", "remote add"});
+
+        std::cout << cli.getActiveSubcommand() << std::endl;
+    } catch(const CLIException& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
     }
-}
 
-int main()
-{
-    std::vector<std::string> v = {"getProgramName", "getArguments", "getActiveSubcommand", "getActiveSubcommandEndPosition",
-    "getArgumentAt", "getFlagPosition", "getValidSubcommands", "getValidFlags", "getActiveFlags", "getActiveFlagsAndPositions", 
-    "getActiveFlagIn", "getAllActiveFlagsIn", "getValueOf", "getAllValuesOf", "getActiveFlagsAndValues"};
-
-    std::sort(v.begin(), v.end());
-    print(v);
+    return 0;
 }
