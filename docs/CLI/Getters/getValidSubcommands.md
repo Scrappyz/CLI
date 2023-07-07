@@ -1,3 +1,18 @@
+## CLI::getValidSubcommands
+Defined in header `cli.hpp`
+
+| |
+| --- |
+| std::unordered_set\<std::string> getValidSubcommands() |
+
+## Return Value
+Returns all the valid subcommands.
+
+## Notes
+- The empty string that is returned along with the other valid subcommands is the empty subcommand. It is the subcommand that is active when there is no subcommand in the argument list.
+
+## Example
+```
 #include <iostream>
 #include "cli.hpp"
 
@@ -23,3 +38,14 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+```
+
+Input:
+```
+CLI.exe remote add --tags mytag
+```
+
+Output:
+```
+"" "add" "status" "remote add" 
+```

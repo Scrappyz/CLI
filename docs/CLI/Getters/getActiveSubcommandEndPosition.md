@@ -1,14 +1,12 @@
-## CLI::getActiveSubcommand
+## CLI::getActiveSubcommandEndPosition
+Defined in header `cli.hpp`
 
 | |
 | --- |
-| std::string getActiveSubcommand() |
+| int getActiveSubcommandEndPosition() |
 
 ## Return Value
-Returns the current active subcommand.
-
-## Notes
-- If no subcommand is present in the argument list, it will return the empty subcommand which is denoted by the empty string `""`.
+Returns the index of the last word of the active subcommand in the argument list.
 
 ## Example
 ```
@@ -23,6 +21,7 @@ int main(int argc, char* argv[])
         cli.setValidFlags("remote add", {"--tags"});
 
         std::cout << "Active Subcommand: " << cli.getActiveSubcommand() << std::endl;
+        std::cout << "Active Subcommand End Position: " << cli.getActiveSubcommandEndPosition() << std::endl;
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;
@@ -40,4 +39,5 @@ CLI.exe remote add --tags mytag
 Output:
 ```
 Active Subcommand: remote add
+Active Subcommand End Position: 2
 ```
