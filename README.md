@@ -1,5 +1,5 @@
 ## CLI
-The CLI is a lightweight command-line parsing library in C++ that aims to simplify the development of console applications.
+The CLI is a lightweight command-line parsing library in C++ that is designed to simplify the development of console applications. It is implemented as a header-only library, which further enhances its convenience and ease of use.
 
 <!-- omit in toc -->
 ## Table Of Contents
@@ -13,10 +13,10 @@ The CLI is a lightweight command-line parsing library in C++ that aims to simpli
 - [Documentation](#documentation)
 
 ## Features
-- **Customisable Subcommands:** Declare the available subcommands of your application
-- **Customisable Flags:** Declare the available flags for each subcommand
-- **Extractable Values:** Provides a convenient way to extract the values of command-line arguments
-- **Ease of Use:** Easy to understand syntax
+- **Customizable Subcommands:** Declare and customize the subcommands available in your application.
+- **Customizable Flags:** Define and customize the flags associated with each subcommand.
+- **Extractable Values:** Conveniently extract and access the values of command-line arguments.
+- **User-Friendly:** Intuitive and easy-to-understand syntax for streamlined usage.
 
 ## Dependencies
 ### Minimum C++ Version
