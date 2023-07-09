@@ -9,7 +9,7 @@ Defiend in header `cli.hpp`
 | std::vector\<std::string> getAllValuesOf(const std::string& flag, int limit = -1) |
 
 ## Parameters
-`flag` - the active flag to get the values of
+`flag` - the active flag to get the values of \
 `limit` - the maximum number of values to be returned
 
 ## Return Value

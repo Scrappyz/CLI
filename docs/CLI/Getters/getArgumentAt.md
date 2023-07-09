@@ -7,7 +7,7 @@
 Returns the argument at the given index or a concatenation of the arguments at the given range indexes.
 
 ## Parameters
-`start` - the start of the range
+`start` - the start of the range \
 `end` - end of the range
 
 ## Return Value

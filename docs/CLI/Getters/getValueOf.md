@@ -9,7 +9,7 @@ Defined in header `cli.hpp`
 | std::string getValueOf(const std::string& flag, int occurance = 1) |
 
 ## Parameters
-`flag` - the flag to get the value of
+`flag` - the flag to get the value of \
 `occurance` - which value to get from the flag
 
 ## Return Value
