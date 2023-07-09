@@ -16,7 +16,7 @@ The CLI is a lightweight command-line parsing library in C++ that aims to simpli
 - **Customisable Subcommands:** Declare the available subcommands of your application
 - **Customisable Flags:** Declare the available flags for each subcommand
 - **Extractable Values:** Provides a convenient way to extract the values of command-line arguments
-- **Ease of Use:** Easily accessible and has simple syntax
+- **Ease of Use:** Easy to understand syntax
 
 ## Dependencies
 ### Minimum C++ Version
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 }
 ```
 
-3. **Initialize the valid subcommands and flags:** Each subcommand will have its own set of flags. Use the [setValidSubcommands()]() method to declare the valid subcommands and use [setValidFlags()]() to declare their flags. All flags need to be prefixed with a `-` for single character flags and `--` for string flags. It is important to declare the available subcommands first before setting the available flags to avoid scoping issues. 
+3. **Initialize the valid subcommands and flags:** Each subcommand will have its own set of flags. Use the [setValidSubcommands()](docs/CLI/Setters/setValidSubcommands.md) method to declare the valid subcommands and use [setValidFlags()](docs/CLI/Setters/setValidFlags.md) to declare their flags. All flags need to be prefixed with a `-` for single character flags and `--` for string flags. It is important to declare the available subcommands first before setting the available flags to avoid scoping issues. 
 ```
 #include "cli.hpp"
 
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 }
 ```
 
-4. **Use the methods of the `CLI` object to run your program accordingly:** We first store the active subcommand in `subcmd` with [getActiveSubcommand()]() so we can use it to check which subcommand is active. The active subcommand is the subcommand that is currently in the command-line arguments. The variable `value` and `all_values` will be used to store the values of the command-line arguments. Once the subcommand in the command-line arguments has been determined, we can check the flags that are present in the argument list with [isFlagActive()]() and extract its values with either [getValueOf()]() or [getAllValuesOf()]().
+4. **Use the methods of the `CLI` object to run your program accordingly:** We first store the active subcommand in `subcmd` with [getActiveSubcommand()](docs/CLI/Getters/getActiveSubcommand.md) so we can use it to check which subcommand is active. The active subcommand is the subcommand that is currently in the command-line arguments. The variable `value` and `all_values` will be used to store the values of the command-line arguments. Once the subcommand in the command-line arguments has been determined, we can check the flags that are present in the argument list with [isFlagActive()](docs/CLI/Lookup/isFlagActive.md) and extract its values with either [getValueOf()](docs/CLI/Getters/getValueOf.md) or [getAllValuesOf()](docs/CLI/Getters/getAllValuesOf.md).
 ```
 #include "cli.hpp"
 
@@ -155,5 +155,5 @@ int main(int argc, char* argv[])
 ```
 
 ## Documentation
-Additional documentation and tutorials on how to use are available here:
-- [CLI Library](docs/CLI/cli.md)
+Additional documentation for each methods are available here:
+- [CLI](docs/CLI/cli.md)

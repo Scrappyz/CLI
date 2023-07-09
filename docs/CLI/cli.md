@@ -40,13 +40,13 @@ The `CLI` class stores the command-line arguments, the valid subcommands and the
 ## Lookup
 | | |
 | --- | --- |
-| [isValidSubcommand]() | checks if a given string is a valid subcommand |
-| [isActiveSubcommand]() | checks if a given string is the current active subcommand |
-| [noActiveSubcommand]() | checks if no subcommand is active |
-| [isFlagActive]() | checks if a given flag or atleast one flag in a given list of flags is present in the argument list |
-| [isValidFlag]() | checks if a given flag is a valid flag of a given subcommand |
+| [isValidSubcommand](Lookup/isValidSubcommand.md) | checks if a given string is a valid subcommand |
+| [isActiveSubcommand](Lookup/isActiveSubcommand.md) | checks if a given string is the current active subcommand |
+| [noActiveSubcommand](Lookup/noActiveSubcommand.md) | checks if no subcommand is active |
+| [isFlagActive](Lookup/isFlagActive.md) | checks if a given flag or atleast one flag in a given list of flags is present in the argument list |
+| [isValidFlag](Lookup/isValidFlag.md) | checks if a given flag is a valid flag of a given subcommand |
 
 ## Modifiers
 | | |
 | --- | --- |
-| [clear]() | clears all data in a `CLI` object |
+| [clear](Modifiers/clear.md) | clears all data in a `CLI` object |
