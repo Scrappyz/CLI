@@ -15,20 +15,20 @@ The `CLI` class stores the command-line arguments, the valid subcommands and the
 ## Getters
 | | |
 | --- | --- |
-| [getProgramName]() | returns the program name |
-| [getArguments]() | returns the argument list |
-| [getActiveSubcommand]() | returns the current active subcommand |
-| [getActiveSubcommandEndPosition]() | returns the position of the last word of the subcommand in the argument list |
-| [getArgumentAt]() | returns the argument at a given position or range of positions |
-| [getFlagPosition]() | returns the position of a valid flag in the argument list |
-| [getValidSubcommands]() | returns the valid subcommands |
-| [getActiveFlags]() | returns the flags that are present in the argument list |
-| [getActiveFlagsAndPositions]() | returns the flags that are present and their positions in the argument list |
-| [getActiveFlagIn]() | returns the first flag that is active in a given list of flags |
-| [getAllActiveFlagsIn]() | returns all the active flags in a given list of flags |
-| [getValueOf]() | returns a single value of a given flag |
-| [getAllValuesOf]() | returns all the values of a given flag |
-| [getActiveFlagsAndValues]() | returns all the active flags and their values |
+| [getProgramName](Getters/getProgramName.md) | returns the program name |
+| [getArguments](Getters/getArguments.md) | returns the argument list |
+| [getActiveSubcommand](Getters/getActiveSubcommand.md) | returns the current active subcommand |
+| [getActiveSubcommandEndPosition](Getters/getActiveSubcommandEndPosition.md) | returns the position of the last word of the subcommand in the argument list |
+| [getArgumentAt](Getters/getArgumentAt.md) | returns the argument at a given position or range of positions |
+| [getFlagPosition](Getters/getFlagPosition.md) | returns the position of a valid flag in the argument list |
+| [getValidSubcommands](Getters/getValidSubcommands.md) | returns the valid subcommands |
+| [getActiveFlags](Getters/getActiveFlags.md) | returns the flags that are present in the argument list |
+| [getActiveFlagsAndPositions](Getters/getActiveFlagsAndPositions.md) | returns the flags that are present and their positions in the argument list |
+| [getActiveFlagIn](Getters/getActiveFlagIn.md) | returns the first flag that is active in a given list of flags |
+| [getAllActiveFlagsIn](Getters/getAllActiveFlagsIn.md) | returns all the active flags in a given list of flags |
+| [getValueOf](Getters/getValueOf.md) | returns a single value of a given flag |
+| [getAllValuesOf](Getters/getAllValuesOf.md) | returns all the values of a given flag |
+| [getActiveFlagsAndValues](Getters/getActiveFlagsAndValues.md) | returns all the active flags and their values |
 
 ## Setters
 | | |

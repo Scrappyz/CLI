@@ -1,3 +1,15 @@
+## CLI::getActiveFlagsAndValues
+Defined in header `cli.hpp`
+
+| | 
+| --- |
+| std::unordered_map\<std::string, std::vector\<std::string>> getActiveFlagsAndValues() |
+
+## Return Value
+Returns all the active flags and their values.
+
+## Example
+```
 #include <iostream>
 #include "cli.hpp"
 
@@ -27,3 +39,16 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+```
+
+Input:
+```
+CLI.exe remote add val1 val2 --tags tag1 tag2 --verbose=true
+```
+
+Ouptut:
+```
+--tags: tag1 tag2 
+--verbose: true
+: val1 val2
+```

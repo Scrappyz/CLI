@@ -48,13 +48,14 @@ int main(int argc, char* argv[])
 2. **Catch Exceptions:** Create a try-catch block that catches a `CLIException` object. (This step is optional)
 ```
 #include "cli.hpp"
+
 int main(int argc, char* argv[])
 {
     CLI cli(argc, argv);
     try {
         // more code
     } catch(const CLIException& e) {
-        cout << e.what() << endl;
+        std::cout << e.what() << std::endl;
         return 1;
     }
     
@@ -81,7 +82,7 @@ int main(int argc, char* argv[])
 
         // more code
     } catch(const CLIException& e) {
-        cout << e.what() << endl;
+        std::cout << e.what() << std::endl;
         return 1;
     }
     
@@ -145,7 +146,7 @@ int main(int argc, char* argv[])
             }
         }
     } catch(const CLIException& e) {
-        cout << e.what() << endl;
+        std::cout << e.what() << std::endl;
         return 1;
     }
     
@@ -155,5 +156,4 @@ int main(int argc, char* argv[])
 
 ## Documentation
 Additional documentation and tutorials on how to use are available here:
-- [CLI Library](docs/CLI/)
-- [Tutorials](docs/Tutorials/)
+- [CLI Library](docs/CLI/cli.md)
