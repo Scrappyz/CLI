@@ -74,7 +74,7 @@ class CLI {
                         if(isValidFlag(temp)) {
                             subcommands.at(subcmd)[temp] = i;
                         } else {
-                            throw CLIException("[Error][setFlags] Flag \"" + flag + "\" is not a valid flag of the \"" + active_subcommand + "\"");
+                            throw CLIException("[Error][setFlags] \"" + temp + "\" is not a valid flag of the \"" + active_subcommand + "\" subcommand");
                         }
                     } else {
                         int j = 0;
@@ -90,7 +90,7 @@ class CLI {
                                 subcommands.at(subcmd)[flag] = i;
                                 flag.pop_back();
                             } else if(!is_valid) {
-                                throw CLIException("[Error][setFlags] Flag \"" + flag + "\" is not a valid flag of the \"" + active_subcommand + "\"");
+                                throw CLIException("[Error][setFlags] \"" + temp + "\" is not a valid flag of the \"" + active_subcommand + "\" subcommand");
                             }
                             j++;
                         }
