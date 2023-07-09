@@ -13,7 +13,7 @@ Defined in header `cli.hpp`
 `occurance` - which value to get from the flag
 
 ## Return Value
-Returns the value of the given flag.
+Returns the value of the given flag. Returns an empty string if there is no value.
 
 ## Error
 Throws a `CLIException` error if the given flag is not present in the argument list.

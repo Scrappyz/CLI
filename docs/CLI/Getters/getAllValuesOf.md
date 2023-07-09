@@ -13,7 +13,7 @@ Defiend in header `cli.hpp`
 `limit` - the maximum number of values to be returned
 
 ## Return Value
-Returns all the values of the given active flag.
+Returns all the values of the given active flag. Returns an empty vector if there is no value.
 
 ## Error
 Throws a `CLIException` error if the given flag is not present in the argument list.
