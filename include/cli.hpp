@@ -244,13 +244,13 @@ class CLI {
             return active_subcommand;
         }
 
-        const std::string& getArgumentAt(int start) const
+        const std::string& getArgumentAt(int index) const
         {
-            if(start < 0 || start >= args.size()) {
+            if(index < 0 || index >= args.size()) {
                 throw CLIException("[Error][" + std::string(__func__) + "] Index is out of range");
             }
 
-            return args[start];
+            return args[index];
         }
 
         std::string getArgumentAt(int start, int end) const

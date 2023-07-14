@@ -273,6 +273,21 @@ TEST(getProgramName, general)
     EXPECT_EQ(cli.getProgramName(), "my.program");
 }
 
+TEST(getArguments, general)
+{
+    vector<string> expected_args = {"MyProgram", "remote", "add", "-R", "my repo"};
+    CLI cli;
+    cli.setArguments({"MyProgram", "remote", "add", "-R", "my repo"});
+    cli.setValidSubcommands({"remote add"});
+    cli.setValidFlags("remote add", {"-R"});
+
+    EXPECT_EQ(cli.getArguments(), expected_args);
+    expected_args = {"remote", "add", "-R", "my repo"};
+    EXPECT_EQ(cli.getArguments(1), expected_args);
+    expected_args = {"remote", "add", "-R"};
+    EXPECT_EQ(cli.getArguments(1, 3), expected_args);
+}
+
 TEST(getArgumentAt, concatenation)
 {
     CLI cli;

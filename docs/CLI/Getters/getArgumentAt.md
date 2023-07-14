@@ -2,16 +2,18 @@
 
 | |
 | --- |
-| std::string getArgumentAt(int start, int end = -1) |
+| const std::string& getArgumentAt(int index) |
+| std::string getArgumentAt(int start, int end) |
 
 Returns the argument at the given index or a concatenation of the arguments at the given range indexes.
 
 ## Parameters
+`index` - the index of the argument
 `start` - the start of the range \
 `end` - end of the range
 
 ## Return Value
-Returns the argument at the given index if the `end` parameter is less than `0`. Returns the concatenation of the arguments at the given range otherwise.
+Returns the argument at the given index. Returns the concatenation of the arguments at the given range.
 
 ## Error
 Throws a `CLIException` error if `start` is out of range.
