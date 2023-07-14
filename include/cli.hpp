@@ -162,6 +162,28 @@ class CLI {
             return getFlagPrefix(flag).size() > 0;
         }
 
+        std::vector<std::string> parseFlag(const std::string& flag)
+        {
+            std::vector<std::string> result;
+            std::string temp = getFlagPrefix(flag);
+
+            if(temp.empty()) {
+                return result;
+            } else if(temp == "--") {
+                result.push_back(flag);
+                return result;
+            }
+
+            int i = temp.size();
+            while(i < flag.size()) {
+                temp.push_back(flag[i]);
+                result.push_back(temp);
+                temp.pop_back();
+            }
+
+            return result;
+        }
+
     public:
         CLI() : args(), subcommands(), active_subcommand(), active_subcommand_end_pos(), max_subcommand_chain_count()
         {
