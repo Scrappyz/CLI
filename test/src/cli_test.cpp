@@ -278,7 +278,7 @@ TEST(getArgumentAt, concatenation)
     CLI cli;
     cli.setArguments({"MyProgram", "remote", "add", "--help", "value", "lol"});
     EXPECT_EQ(cli.getArgumentAt(0), "MyProgram");
-    EXPECT_EQ(cli.getArgumentAt(2, 6), "add");
+    EXPECT_THROW(cli.getArgumentAt(2, 6), CLIException);
     EXPECT_THROW(cli.getArgumentAt(-1, 2), CLIException);
     EXPECT_THROW(cli.getArgumentAt(6, 2), CLIException);
     EXPECT_EQ(cli.getArgumentAt(0, 2), "MyProgram remote add");

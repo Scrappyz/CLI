@@ -211,6 +211,29 @@ class CLI {
             return args;
         }
 
+        std::vector<std::string> getArguments(int start) const
+        {
+            return getArguments(start, args.size()-1);
+        }
+
+        std::vector<std::string> getArguments(int start, int end) const
+        {
+            if(start < 0 || start >= args.size()) {
+                throw CLIException("[Error][" + std::string(__func__) + "] Index is out of range");
+            }
+
+            if(end < 0 || end >= args.size()) {
+                throw CLIException("[Error][" + std::string(__func__) + "] Index is out of range");
+            } 
+
+            std::vector<std::string> result;
+            for(int i = start; i <= end; i++) {
+                result.push_back(args[i]);
+            }
+
+            return result;
+        }
+
         int getArgumentCount() const
         {
             return args.size();
@@ -221,14 +244,23 @@ class CLI {
             return active_subcommand;
         }
 
-        std::string getArgumentAt(int start, int end = -1) const
+        const std::string& getArgumentAt(int start) const
+        {
+            if(start < 0 || start >= args.size()) {
+                throw CLIException("[Error][" + std::string(__func__) + "] Index is out of range");
+            }
+
+            return args[start];
+        }
+
+        std::string getArgumentAt(int start, int end) const
         {
             if(start < 0 || start >= args.size()) {
                 throw CLIException("[Error][" + std::string(__func__) + "] Index is out of range");
             }
 
             if(end < 0 || end >= args.size()) {
-                return args[start];
+                throw CLIException("[Error][" + std::string(__func__) + "] Index is out of range");
             } 
 
             std::string result;

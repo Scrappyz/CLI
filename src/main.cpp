@@ -11,7 +11,8 @@ int main(int argc, char* argv[])
         cli.setValidFlags("status", {"-v", "--verbose"});
         cli.setValidFlags("remote add", {"--tags", "-h", "--help", "--verbose"});
 
-        std::cout << cli.getStartPosition() << std::endl;
+        std::cout << cli.getArgumentAt(1) << std::endl;
+        std::cout << cli.getArgumentAt(0, 3) << std::endl;
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;
