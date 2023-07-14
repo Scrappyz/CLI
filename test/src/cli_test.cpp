@@ -331,6 +331,39 @@ TEST(getAllActiveFlagsIn, multiple_flags)
     EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v", "--verbose"}), expected_flags);
 }
 
+TEST(getAnyValue, general)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "init", "cpp-app", "--path", "value1", "-f", "trueval"});
+    cli.setValidSubcommands({"init"});
+    cli.setValidFlags("init", {"--path", "-f"});
+    EXPECT_EQ(cli.getAnyValue({"--path"}), "cpp-app");
+    EXPECT_EQ(cli.getAnyValue(2, {"--path"}), "trueval");
+
+    cli.clear();
+    cli.setArguments({"MyProgram", "init", "--path", "my/path", "cpp-app"});
+    cli.setValidSubcommands({"init"});
+    cli.setValidFlags("init", {"--path", "-f"});
+    EXPECT_EQ(cli.getAnyValue(), "my/path");
+    EXPECT_EQ(cli.getAnyValue(2), "cpp-app");
+    EXPECT_EQ(cli.getAnyValue({"--path"}), "");
+}
+
+TEST(getAllValues, general)
+{
+    vector<string> expected_vals = {"cpp-app", "value1", "trueval"};
+
+    CLI cli;
+    cli.setArguments({"MyProgram", "init", "cpp-app", "--path", "value1", "-f", "trueval"});
+    cli.setValidSubcommands({"init"});
+    cli.setValidFlags("init", {"--path", "-f"});
+    EXPECT_EQ(cli.getAllValues(), expected_vals);
+    expected_vals = {"cpp-app", "trueval"};
+    EXPECT_EQ(cli.getAllValues({"--path"}), expected_vals);
+    expected_vals = {"cpp-app"};
+    EXPECT_EQ(cli.getAllValues(1), expected_vals);
+}
+
 TEST(getValueOf, general)
 {
     CLI cli;

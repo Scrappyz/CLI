@@ -361,6 +361,65 @@ class CLI {
             return active_flags;
         }
 
+        std::string getAnyValue(int occurance = 1, const std::unordered_set<std::string>& excluded_flags = {}) const
+        {
+            return getAnyValue(excluded_flags, occurance);
+        }
+
+        std::string getAnyValue(const std::unordered_set<std::string>& excluded_flags, int occurance = 1) const
+        {
+            bool skip_val = false;
+            int counter = 1;
+            for(int i = getStartPosition(); i < args.size(); i++) {
+                if(hasFlagPrefix(args[i])) {
+                    skip_val = false;
+                    if(excluded_flags.count(args[i]) > 0) {
+                        skip_val = true;
+                    }
+                    continue;
+                }
+
+                if(!skip_val) {
+                    if(counter == occurance) {
+                        return args[i];
+                    }
+                    counter++;
+                }
+            }
+
+            return std::string();
+        }
+
+        std::vector<std::string> getAllValues(int limit = -1)
+        {
+            return getAllValues(std::unordered_set<std::string>(), limit);
+        }
+
+        std::vector<std::string> getAllValues(const std::unordered_set<std::string>& excluded_flags, int limit = -1)
+        {
+            std::vector<std::string> result;
+            bool skip_val = false;
+            for(int i = getStartPosition(); i < args.size(); i++) {
+                if(hasFlagPrefix(args[i])) {
+                    skip_val = false;
+                    if(excluded_flags.count(args[i]) > 0) {
+                        skip_val = true;
+                    }
+                    continue;
+                }
+
+                if(!skip_val) {
+                    result.push_back(args[i]);
+                }
+
+                if(limit >= 0 && result.size() >= limit) {
+                    return result;
+                }
+            }
+
+            return result;
+        }
+
         std::string getValueOf(int occurance = 1) const
         {
             return getValueOf(active_subcommand, occurance);
