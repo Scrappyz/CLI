@@ -17,8 +17,9 @@ The `CLI` class stores the command-line arguments, the valid subcommands and the
 | --- | --- |
 | [getProgramName](Getters/getProgramName.md) | returns the program name |
 | [getArguments](Getters/getArguments.md) | returns the argument list |
+| [getArgumentCount](Getters/getArgumentCount.md) | returns the size of the argument list |
 | [getActiveSubcommand](Getters/getActiveSubcommand.md) | returns the current active subcommand |
-| [getActiveSubcommandEndPosition](Getters/getActiveSubcommandEndPosition.md) | returns the position of the last word of the subcommand in the argument list |
+| [getStartPosition](Getters/getStartPosition.md) | returns the index after the subcommand |
 | [getArgumentAt](Getters/getArgumentAt.md) | returns the argument at a given position or range of positions |
 | [getFlagPosition](Getters/getFlagPosition.md) | returns the position of a valid flag in the argument list |
 | [getValidSubcommands](Getters/getValidSubcommands.md) | returns the valid subcommands |
@@ -33,9 +34,9 @@ The `CLI` class stores the command-line arguments, the valid subcommands and the
 ## Setters
 | | |
 | --- | --- |
-| [setArguments]() | initializes the argument list |
-| [setValidSubcommands]() | initializes the valid subcommands |
-| [setValidFlags]() | initializes the valid flags of a given valid subcommand |
+| [setArguments](Setters/setArguments.md) | initializes the argument list |
+| [setValidSubcommands](Setters/setValidSubcommands.md) | initializes the valid subcommands |
+| [setValidFlags](Setters/setValidFlags.md) | initializes the valid flags of a given valid subcommand |
 
 ## Lookup
 | | |

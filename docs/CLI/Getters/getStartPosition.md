@@ -1,3 +1,17 @@
+## CLI::getStartPosition
+Defined in header `cli.hpp`
+
+| |
+| --- |
+| int getStartPosition() |
+
+Returns the index after the subcommand which can be used when searching through the argument list.
+
+## Return Value
+Returns the index after the subcommand.
+
+## Example
+```
 #include <iostream>
 #include "cli.hpp"
 
@@ -19,3 +33,14 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+```
+
+Input:
+```
+CLI.exe remote add -h
+```
+
+Output:
+```
+3
+```

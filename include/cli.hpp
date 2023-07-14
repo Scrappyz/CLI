@@ -211,14 +211,14 @@ class CLI {
             return args;
         }
 
+        int getArgumentCount() const
+        {
+            return args.size();
+        }
+
         const std::string& getActiveSubcommand() const
         {
             return active_subcommand;
-        }
-
-        int getActiveSubcommandEndPosition() const
-        {
-            return active_subcommand_end_pos;
         }
 
         std::string getArgumentAt(int start, int end = -1) const
@@ -240,6 +240,11 @@ class CLI {
             }
 
             return result;
+        }
+
+        int getStartPosition() const
+        {
+            return active_subcommand_end_pos + 1;
         }
 
         int getFlagPosition(const std::string& flag) const
