@@ -64,36 +64,17 @@ class CLI {
             }
 
             for(int i = start; i < args.size(); i++) { 
-                std::string prefix = getFlagPrefix(args[i]);
-                if(!prefix.empty()) {
-                    std::string flag;
-                    std::string temp = trim(args[i]);
-                    bool is_flag_word = (prefix.size() == 2);
+                std::vector<std::string> flags = parseFlag(trim(args[i]));
 
-                    if(is_flag_word) {
-                        if(isValidFlag(temp)) {
-                            subcommands.at(subcmd)[temp] = i;
-                        } else {
-                            throw CLIException("[Error][setFlags] \"" + temp + "\" is not a valid flag of the \"" + active_subcommand + "\" subcommand");
-                        }
+                if(flags.empty()) {
+                    continue;
+                } 
+
+                for(int j = 0; j < flags.size(); j++) { // something wrong here
+                    if(isValidFlag(flags[j])) {
+                        subcommands.at(subcmd)[flags[j]] = i;
                     } else {
-                        int j = 0;
-                        while(j < temp.size() && isFlagPrefix(temp[j])) {
-                            flag.push_back(temp[j]);
-                            j++;
-                        }
-
-                        while(j < temp.size()) {
-                            flag.push_back(temp[j]);
-                            bool is_valid = isValidFlag(flag);
-                            if(!isFlagPrefix(temp[j]) && is_valid) {
-                                subcommands.at(subcmd)[flag] = i;
-                                flag.pop_back();
-                            } else if(!is_valid) {
-                                throw CLIException("[Error][setFlags] \"" + temp + "\" is not a valid flag of the \"" + active_subcommand + "\" subcommand");
-                            }
-                            j++;
-                        }
+                        throw CLIException("[Error][setFlags] \"" + flags[j] + "\" is not a valid flag of the \"" + active_subcommand + "\" subcommand");
                     }
                 }
             }
@@ -167,7 +148,7 @@ class CLI {
             std::vector<std::string> result;
             std::string temp = getFlagPrefix(flag);
 
-            if(temp.empty()) {
+            if(temp.empty() || temp.size() == flag.size()) {
                 return result;
             } else if(temp == "--") {
                 result.push_back(flag);
@@ -179,6 +160,7 @@ class CLI {
                 temp.push_back(flag[i]);
                 result.push_back(temp);
                 temp.pop_back();
+                i++;
             }
 
             return result;
@@ -645,7 +627,7 @@ class CLI {
         void setValidFlags(const std::string& subcmd, const std::vector<std::string>& valid_flags) // initializes the keys of flags
         {
             if(!isValidSubcommand(subcmd)) {
-                throw CLIException("[Error][" + std::string(__func__) + "()] Invalid subcommand \"" + subcmd + "\"");
+                throw CLIException("[Error][" + std::string(__func__) + "] Invalid subcommand \"" + subcmd + "\"");
             }
                 
             subcommands.at(subcmd).clear(); // clear the old flags of the given subcommand
