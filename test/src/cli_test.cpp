@@ -349,6 +349,15 @@ TEST(getAnyValue, general)
     EXPECT_EQ(cli.getAnyValue({"--path"}), "");
 }
 
+TEST(getAnyValue, multiple_single_flags)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "init", "-hiv", "value1", "-o", "value2"});
+    cli.setValidSubcommands({"init"});
+    cli.setValidFlags("init", {"-h", "-i", "-v", "-o"});
+    
+}
+
 TEST(getAllValues, general)
 {
     vector<string> expected_vals = {"cpp-app", "value1", "trueval"};
