@@ -355,7 +355,10 @@ TEST(getAnyValue, multiple_single_flags)
     cli.setArguments({"MyProgram", "init", "-hiv", "value1", "-o", "value2"});
     cli.setValidSubcommands({"init"});
     cli.setValidFlags("init", {"-h", "-i", "-v", "-o"});
-    
+    EXPECT_EQ(cli.getAnyValue({"-h"}), "value1");
+    EXPECT_EQ(cli.getAnyValue({"-i"}), "value1");
+    EXPECT_EQ(cli.getAnyValue({"-v"}), "value1");
+    EXPECT_EQ(cli.getAnyValue({"-h", "-i", "-v"}), "value2");
 }
 
 TEST(getAllValues, general)
@@ -371,6 +374,21 @@ TEST(getAllValues, general)
     EXPECT_EQ(cli.getAllValues({"--path"}), expected_vals);
     expected_vals = {"cpp-app"};
     EXPECT_EQ(cli.getAllValues(1), expected_vals);
+}
+
+TEST(getAllValues, multiple_single_flags)
+{
+    vector<string> expected_vals = {"value1", "value2"};
+
+    CLI cli;
+    cli.setArguments({"MyProgram", "init", "-hiv", "value1", "-o", "value2"});
+    cli.setValidSubcommands({"init"});
+    cli.setValidFlags("init", {"-h", "-i", "-v", "-o"});
+    EXPECT_EQ(cli.getAllValues({"-h"}), expected_vals);
+    EXPECT_EQ(cli.getAllValues({"-i"}), expected_vals);
+    EXPECT_EQ(cli.getAllValues({"-v"}), expected_vals);
+    expected_vals = {"value2"};
+    EXPECT_EQ(cli.getAllValues({"-h", "-i", "-v"}), expected_vals);
 }
 
 TEST(getValueOf, general)

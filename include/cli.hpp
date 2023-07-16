@@ -110,7 +110,7 @@ class CLI {
             max_subcommand_chain_count = 0;
         }
 
-        std::string trim(const std::string& str) // removes trailing whitespace
+        std::string trim(const std::string& str) const // removes trailing whitespace
         {
             std::string trimmed;
             trimmed.reserve(str.size());
@@ -395,19 +395,25 @@ class CLI {
             int counter = 1;
             for(int i = getStartPosition(); i < args.size(); i++) {
                 if(hasFlagPrefix(args[i])) {
-                    skip_val = false;
-                    if(excluded_flags.count(args[i]) > 0) {
+                    std::vector<std::string> flags = splitFlags(trim(args[i]));
+                    for(int j = 0; j < flags.size(); j++) {
+                        if(excluded_flags.count(flags[j]) < 1) {
+                            skip_val = false;
+                            break;
+                        }
                         skip_val = true;
                     }
                     continue;
                 }
 
-                if(!skip_val) {
-                    if(counter == occurance) {
-                        return args[i];
-                    }
-                    counter++;
+                if(skip_val) {
+                    continue;
                 }
+
+                if(counter == occurance) {
+                    return args[i];
+                }
+                counter++;
             }
 
             return std::string();
@@ -424,8 +430,12 @@ class CLI {
             bool skip_val = false;
             for(int i = getStartPosition(); i < args.size(); i++) {
                 if(hasFlagPrefix(args[i])) {
-                    skip_val = false;
-                    if(excluded_flags.count(args[i]) > 0) {
+                    std::vector<std::string> flags = splitFlags(trim(args[i]));
+                    for(int j = 0; j < flags.size(); j++) {
+                        if(excluded_flags.count(flags[j]) < 1) {
+                            skip_val = false;
+                            break;
+                        }
                         skip_val = true;
                     }
                     continue;
@@ -636,6 +646,11 @@ class CLI {
             if(!args.empty()) { // reset the new active subcommand
                 setActiveSubcommand();
             }
+        }
+
+        void setValidGlobalFlags(const std::vector<std::string>& valid_flags)
+        {
+
         }
 
         void setValidFlags(const std::vector<std::string>& valid_flags)
