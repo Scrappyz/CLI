@@ -1,10 +1,10 @@
-## CLI::setValidFlags
+## CLI::addFlags
 Defined in header `cli.hpp`
 
 | |
 | --- |
-| void setValidFlags(const std::vector\<std::string>& valid_flags) |
-| void setValidFlags(const std::string& subcmd, const std::vector\<std::string>& valid_flags) |
+| void addFlags(const std::vector\<std::string>& valid_flags) |
+| void addFlags(const std::string& subcmd, const std::vector\<std::string>& valid_flags) |
 
 Initializes the flags a subcommand can take.
 
@@ -38,10 +38,10 @@ int main(int argc, char* argv[])
     CLI cli(argc, argv);
     try {
         cli.setValidSubcommands({"add", "status", "remote add"});
-        cli.setValidFlags({"-h", "--help"});
-        cli.setValidFlags("add", {"--path"});
-        cli.setValidFlags("status", {"-v", "--verbose"});
-        cli.setValidFlags("remote add", {"--tags", "-h", "--help", "--verbose"});
+        cli.addFlags({"-h", "--help"});
+        cli.addFlags("add", {"--path"});
+        cli.addFlags("status", {"-v", "--verbose"});
+        cli.addFlags("remote add", {"--tags", "-h", "--help", "--verbose"});
 
         std::cout << "Empty Subcommand: ";
         print(cli.getValidFlags(""));

@@ -35,8 +35,8 @@ The `CLI` class stores the command-line arguments, the valid subcommands and the
 | | |
 | --- | --- |
 | [setArguments](Setters/setArguments.md) | initializes the argument list |
-| [setValidSubcommands](Setters/setValidSubcommands.md) | initializes the valid subcommands |
-| [setValidFlags](Setters/setValidFlags.md) | initializes the valid flags of a given valid subcommand |
+| [addSubcommands](Modifiers/addSubcommands.md) | initializes the valid subcommands |
+| [addFlags](Modifiers/addFlags.md) | initializes the valid flags of a given valid subcommand |
 
 ## Lookup
 | | |

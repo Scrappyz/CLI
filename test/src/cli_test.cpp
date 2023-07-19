@@ -12,32 +12,32 @@ TEST(setArguments, general)
     EXPECT_EQ(cli.getValidSubcommands(), expected_sub);
     EXPECT_EQ(cli.getActiveSubcommand(), "");
     //EXPECT_EQ(cli.getMaxSubcommandChainCount(), 0);
-    cli.setValidSubcommands({"remote", "add", "origin"});
+    cli.addSubcommands({"remote", "add", "origin"});
     EXPECT_EQ(cli.getActiveSubcommand(), "remote");
     EXPECT_EQ(cli.getActiveSubcommand(), "remote");
-    cli.setValidSubcommands({"remote", "remote add origin"});
+    cli.addSubcommands({"remote", "remote add origin"});
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add origin");
 
-    cli.setValidSubcommands({"add", "origin", "remote add origin"});
+    cli.addSubcommands({"add", "origin", "remote add origin"});
     cli.setArguments({"MyProgram", "add", "origin"});
     EXPECT_EQ(cli.getActiveSubcommand(), "add");
 
-    cli.setValidSubcommands({"add", "origin", "remote add origin"});
+    cli.addSubcommands({"add", "origin", "remote add origin"});
     cli.setArguments({"MyProgram", "remote", "add", "origin"});
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add origin");
 
     cli.setArguments({"MyProgram", "add", "hi"});
     EXPECT_EQ(cli.getActiveSubcommand(), "add");
-    cli.setValidSubcommands({"add", "hi"});
+    cli.addSubcommands({"add", "hi"});
     EXPECT_EQ(cli.getActiveSubcommand(), "add");
 
-    cli.setValidSubcommands({""});
+    cli.addSubcommands({""});
     EXPECT_EQ(cli.getActiveSubcommand(), "");
 
     cli.setArguments({"MyProgram", "remote", "-h"});
-    cli.setValidSubcommands({"remote", "remote add"});
-    cli.setValidFlags("remote", {"-h"});
-    cli.setValidFlags("remote add", {"--help"});
+    cli.addSubcommands({"remote", "remote add"});
+    cli.addFlags("remote", {"-h"});
+    cli.addFlags("remote add", {"--help"});
     EXPECT_EQ(cli.getActiveSubcommand(), "remote");
     EXPECT_EQ(cli.isFlagActive("-h"), true);
     cli.setArguments({"MyProgram", "remote", "add", "--help"});
@@ -45,55 +45,55 @@ TEST(setArguments, general)
     EXPECT_EQ(cli.isFlagActive("--help"), true);
 }
 
-TEST(setValidSubcommands, general)
+TEST(addSubcommands, general)
 {
     CLI cli({"MyProgram", "remote", "add", "--origin"});
-    cli.setValidSubcommands({"pull", "push", "remote add"});
+    cli.addSubcommands({"pull", "push", "remote add"});
     //EXPECT_EQ(cli.getMaxSubcommandChainCount(), 2);
 
-    cli.setValidSubcommands({"", ""});
+    cli.addSubcommands({"", ""});
     //EXPECT_EQ(cli.getMaxSubcommandChainCount(), 0);
 
-    cli.setValidSubcommands({"", "  hello", "   hi   ", "boi   "});
+    cli.addSubcommands({"", "  hello", "   hi   ", "boi   "});
     unordered_set<string> expected_subcmd = {"", "hello", "hi", "boi"};
     //EXPECT_EQ(cli.getMaxSubcommandChainCount(), 1);
     EXPECT_EQ(cli.getValidSubcommands(), expected_subcmd);
 
     CLI cmd({"MyProgram"});
     expected_subcmd = {""};
-    cmd.setValidSubcommands({});
+    cmd.addSubcommands({});
     EXPECT_EQ(cmd.getValidSubcommands(), expected_subcmd);
 }
 
-TEST(setValidFlags, general)
+TEST(addFlags, general)
 {
     CLI cli;
     unordered_set<string> expected_sub;
     cli.setArguments({"MyProgram", "push", "-f", "all"});
-    cli.setValidSubcommands({"push"});
-    cli.setValidFlags("push", {"-f"});
+    cli.addSubcommands({"push"});
+    cli.addFlags("push", {"-f"});
     EXPECT_EQ(cli.isValidFlag("-f"), true);
     EXPECT_EQ(cli.isFlagActive("-f"), true);
 
-    cli.setValidSubcommands({"pull", "pull jim hoe"});
+    cli.addSubcommands({"pull", "pull jim hoe"});
     expected_sub = {"pull", "pull jim hoe", ""};
     EXPECT_EQ(cli.getValidSubcommands(), expected_sub);
-    EXPECT_THROW(cli.setValidFlags("push", {"-f"}), CLIException);
+    EXPECT_THROW(cli.addFlags("push", {"-f"}), CLIException);
     EXPECT_EQ(cli.getActiveSubcommand(), "");
 
     cli.setArguments({"MyProgram", "pull", "jim", "hoe", "-g", "value"});
     EXPECT_EQ(cli.getActiveSubcommand(), "pull jim hoe");
-    EXPECT_THROW(cli.setValidFlags("pull jim hoe", {"-f"}), CLIException);
+    EXPECT_THROW(cli.addFlags("pull jim hoe", {"-f"}), CLIException);
     EXPECT_EQ(cli.isValidFlag("-f"), true);
     EXPECT_EQ(cli.isFlagActive("-f"), false);
 }
 
-TEST(setValidFlags, multiple_single_flags)
+TEST(addFlags, multiple_single_flags)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "-hmv", "--help", "stuff"});
-    cli.setValidSubcommands({});
-    cli.setValidFlags({"-h", "--help", "-m", "-v"});
+    cli.addSubcommands({});
+    cli.addFlags({"-h", "--help", "-m", "-v"});
     EXPECT_EQ(cli.getFlagPosition("-h"), 1);
     EXPECT_EQ(cli.getFlagPosition("-m"), 1);
     EXPECT_EQ(cli.getFlagPosition("-v"), 1);
@@ -101,7 +101,7 @@ TEST(setValidFlags, multiple_single_flags)
 
     cli.clear();
     cli.setArguments({"MyProgram", "-hmv", "-gc", "--hello"});
-    cli.setValidFlags({"-h", "-m", "-v", "-g", "-c", "--hello"});
+    cli.addFlags({"-h", "-m", "-v", "-g", "-c", "--hello"});
     EXPECT_EQ(cli.getFlagPosition("-h"), 1);
     EXPECT_EQ(cli.getFlagPosition("-m"), 1);
     EXPECT_EQ(cli.getFlagPosition("-v"), 1);
@@ -111,14 +111,14 @@ TEST(setValidFlags, multiple_single_flags)
 
     cli.clear();
     cli.setArguments({"MyProgram", "-hmvx", "-gc", "--hello"});
-    EXPECT_THROW(cli.setValidFlags({"-h", "-m", "-v", "-g", "-c", "--hello"}), CLIException);
+    EXPECT_THROW(cli.addFlags({"-h", "-m", "-v", "-g", "-c", "--hello"}), CLIException);
 }
 
-TEST(setValidFlags, duplicate_multiple_single_flags)
+TEST(addFlags, duplicate_multiple_single_flags)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "-uvv", "hello"});
-    cli.setValidFlags({"-h", "-u", "-v"});
+    cli.addFlags({"-h", "-u", "-v"});
     EXPECT_EQ(cli.getFlagPosition("-h"), -1);
     EXPECT_EQ(cli.getFlagPosition("-u"), 1);
     EXPECT_EQ(cli.getFlagPosition("-v"), 1);
@@ -127,12 +127,12 @@ TEST(setValidFlags, duplicate_multiple_single_flags)
     EXPECT_EQ(cli.getFlagPosition("-v"), 2);
 }
 
-TEST(setValidFlags, substring_in_another_flag)
+TEST(addFlags, substring_in_another_flag)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "-hmv", "--helpme", "stuff"});
-    cli.setValidSubcommands({});
-    cli.setValidFlags({"-h", "--help", "-m", "-v", "--helpme"});
+    cli.addSubcommands({});
+    cli.addFlags({"-h", "--help", "-m", "-v", "--helpme"});
     EXPECT_EQ(cli.getFlagPosition("-h"), 1);
     EXPECT_EQ(cli.getFlagPosition("-m"), 1);
     EXPECT_EQ(cli.getFlagPosition("-v"), 1);
@@ -148,65 +148,65 @@ TEST(setValidFlags, substring_in_another_flag)
     EXPECT_EQ(cli.getFlagPosition("--helpme"), 1);
 }
 
-TEST(setValidFlags, duplicate_flags_initialization)
+TEST(addFlags, duplicate_flags_initialization)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "--help", "-h", "stuff"});
-    cli.setValidFlags({"-h", "--help", "-h", "--help"});
+    cli.addFlags({"-h", "--help", "-h", "--help"});
     unordered_map<string, int> expected_flags = {{"-h", 2}, {"--help", 1}};
     EXPECT_EQ(cli.getActiveFlagsAndPositions(), expected_flags);
 }
 
-TEST(setValidFlags, duplicate_flags)
+TEST(addFlags, duplicate_flags)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "--help", "--help"});
-    cli.setValidFlags({"--help"});
+    cli.addFlags({"--help"});
     EXPECT_EQ(cli.getFlagPosition("--help"), 2);
 
     cli.clear();
     cli.setArguments({"MyProgram", "--flag=value", "--flag"});
-    cli.setValidFlags({"--flag"});
+    cli.addFlags({"--flag"});
     EXPECT_EQ(cli.getFlagPosition("--flag"), 2);
     EXPECT_EQ(cli.getAllValuesOf("--flag"), vector<string>());
 }
 
-TEST(setValidFlags, flags_with_invalid_prefix)
+TEST(addFlags, flags_with_invalid_prefix)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "--help", "-h", "stuff"});
-    EXPECT_THROW(cli.setValidFlags({"--help", "/h"}), CLIException);
-    EXPECT_THROW(cli.setValidFlags({"---help"}), CLIException);
-    EXPECT_THROW(cli.setValidFlags({"money"}), CLIException);
+    EXPECT_THROW(cli.addFlags({"--help", "/h"}), CLIException);
+    EXPECT_THROW(cli.addFlags({"---help"}), CLIException);
+    EXPECT_THROW(cli.addFlags({"money"}), CLIException);
 }
 
-TEST(setValidFlags, multiple_single_flag_initialization)
+TEST(addFlags, multiple_single_flag_initialization)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "-hmv"});
-    EXPECT_THROW(cli.setValidFlags({"-hmv"}), CLIException);
-    EXPECT_THROW(cli.setValidFlags({"-help"}), CLIException);
+    EXPECT_THROW(cli.addFlags({"-hmv"}), CLIException);
+    EXPECT_THROW(cli.addFlags({"-help"}), CLIException);
 }
 
-TEST(setValidFlags, invalid_flags)
+TEST(addFlags, invalid_flags)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "-hel-lo", "stuff"});
-    EXPECT_THROW(cli.setValidFlags({"-h", "-e", "-o"}), CLIException);
+    EXPECT_THROW(cli.addFlags({"-h", "-e", "-o"}), CLIException);
 
     cli.clear();
-    cli.setValidFlags({"-h", "-e", "-o"});
+    cli.addFlags({"-h", "-e", "-o"});
     EXPECT_THROW(cli.setArguments({"MyProgram", "-hel-lo", "stuff"}), CLIException);
 }
 
-TEST(setValidFlags, edge_cases)
+TEST(addFlags, edge_cases)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "--help", "-h", "stuff"});
-    EXPECT_THROW(cli.setValidFlags({""}), CLIException);
-    EXPECT_THROW(cli.setValidFlags({"-"}), CLIException);
-    EXPECT_THROW(cli.setValidFlags({"--"}), CLIException);
-    EXPECT_THROW(cli.setValidFlags({"---"}), CLIException);
+    EXPECT_THROW(cli.addFlags({""}), CLIException);
+    EXPECT_THROW(cli.addFlags({"-"}), CLIException);
+    EXPECT_THROW(cli.addFlags({"--"}), CLIException);
+    EXPECT_THROW(cli.addFlags({"---"}), CLIException);
 }
 
 TEST(initialization, order)
@@ -219,8 +219,8 @@ TEST(initialization, order)
     // args -> subcommands -> flags
     CLI cli;
     cli.setArguments({"MyProgram", "remote", "add", "-h", "val1", "--output", "val2"});
-    cli.setValidSubcommands({"remote", "remote add"});
-    cli.setValidFlags("remote add", {"-h", "--output", "-o"});
+    cli.addSubcommands({"remote", "remote add"});
+    cli.addFlags("remote add", {"-h", "--output", "-o"});
     EXPECT_EQ(cli.getArguments(), expected_args);
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add");
     EXPECT_EQ(cli.getValidSubcommands(), expected_subs);
@@ -228,9 +228,9 @@ TEST(initialization, order)
 
     // subcommands -> args -> flags
     cli.clear();
-    cli.setValidSubcommands({"remote", "remote add"});
+    cli.addSubcommands({"remote", "remote add"});
     cli.setArguments({"MyProgram", "remote", "add", "-h", "val1", "--output", "val2"});
-    cli.setValidFlags("remote add", {"-h", "--output", "-o"});
+    cli.addFlags("remote add", {"-h", "--output", "-o"});
     EXPECT_EQ(cli.getArguments(), expected_args);
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add");
     EXPECT_EQ(cli.getValidSubcommands(), expected_subs);
@@ -239,8 +239,8 @@ TEST(initialization, order)
     // flags -> subcommands -> args
     cli.clear();
     expected_flags.clear();
-    EXPECT_THROW(cli.setValidFlags("remote add", {"-h", "--output", "-o"}), CLIException); // subcommands have not been set yet
-    cli.setValidSubcommands({"remote", "remote add"});
+    EXPECT_THROW(cli.addFlags("remote add", {"-h", "--output", "-o"}), CLIException); // subcommands have not been set yet
+    cli.addSubcommands({"remote", "remote add"});
     cli.setArguments({"MyProgram", "remote", "add", "-h", "val1", "--output", "val2"});
     EXPECT_EQ(cli.getArguments(), expected_args);
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add");
@@ -249,9 +249,9 @@ TEST(initialization, order)
 
     // flags -> args -> subcommands
     cli.clear();
-    EXPECT_THROW(cli.setValidFlags("remote add", {"-h", "--output", "-o"}), CLIException);
+    EXPECT_THROW(cli.addFlags("remote add", {"-h", "--output", "-o"}), CLIException);
     cli.setArguments({"MyProgram", "remote", "add", "-h", "val1", "--output", "val2"});
-    cli.setValidSubcommands({"remote", "remote add"});
+    cli.addSubcommands({"remote", "remote add"});
     EXPECT_EQ(cli.getArguments(), expected_args);
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add");
     EXPECT_EQ(cli.getValidSubcommands(), expected_subs);
@@ -278,8 +278,8 @@ TEST(getArguments, general)
     vector<string> expected_args = {"MyProgram", "remote", "add", "-R", "my repo"};
     CLI cli;
     cli.setArguments({"MyProgram", "remote", "add", "-R", "my repo"});
-    cli.setValidSubcommands({"remote add"});
-    cli.setValidFlags("remote add", {"-R"});
+    cli.addSubcommands({"remote add"});
+    cli.addFlags("remote add", {"-R"});
 
     EXPECT_EQ(cli.getArguments(), expected_args);
     expected_args = {"remote", "add", "-R", "my repo"};
@@ -305,7 +305,7 @@ TEST(getActiveFlagIn, general)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "-h", "hi", "-v"});
-    cli.setValidFlags({"-h", "--help", "-v", "--verbose"});
+    cli.addFlags({"-h", "--help", "-v", "--verbose"});
     EXPECT_EQ(cli.getActiveFlagIn({"-h", "--help"}), "-h");
     EXPECT_EQ(cli.getActiveFlagIn({"-v", "--verbose"}), "-v");
 }
@@ -316,7 +316,7 @@ TEST(getAllActiveFlagsIn, general)
 
     CLI cli;
     cli.setArguments({"MyProgram", "-h", "--help", "-v", "hi"});
-    cli.setValidFlags({"-h", "--help", "-v", "--verbose"});
+    cli.addFlags({"-h", "--help", "-v", "--verbose"});
     EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v"}), expected_flags);
     EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v", "--verbose"}), expected_flags);
 }
@@ -327,7 +327,7 @@ TEST(getAllActiveFlagsIn, multiple_flags)
     
     CLI cli;
     cli.setArguments({"MyProgram", "-h", "-h", "--help"});
-    cli.setValidFlags({"-h", "--help", "-v", "--verbose"});
+    cli.addFlags({"-h", "--help", "-v", "--verbose"});
     EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v", "--verbose"}), expected_flags);
 }
 
@@ -335,15 +335,15 @@ TEST(getAnyValue, general)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "init", "cpp-app", "--path", "value1", "-f", "trueval"});
-    cli.setValidSubcommands({"init"});
-    cli.setValidFlags("init", {"--path", "-f"});
+    cli.addSubcommands({"init"});
+    cli.addFlags("init", {"--path", "-f"});
     EXPECT_EQ(cli.getAnyValue({"--path"}), "cpp-app");
     EXPECT_EQ(cli.getAnyValue(2, {"--path"}), "trueval");
 
     cli.clear();
     cli.setArguments({"MyProgram", "init", "--path", "my/path", "cpp-app"});
-    cli.setValidSubcommands({"init"});
-    cli.setValidFlags("init", {"--path", "-f"});
+    cli.addSubcommands({"init"});
+    cli.addFlags("init", {"--path", "-f"});
     EXPECT_EQ(cli.getAnyValue(), "my/path");
     EXPECT_EQ(cli.getAnyValue(2), "cpp-app");
     EXPECT_EQ(cli.getAnyValue({"--path"}), "");
@@ -353,8 +353,8 @@ TEST(getAnyValue, multiple_single_flags)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "init", "-hiv", "value1", "-o", "value2"});
-    cli.setValidSubcommands({"init"});
-    cli.setValidFlags("init", {"-h", "-i", "-v", "-o"});
+    cli.addSubcommands({"init"});
+    cli.addFlags("init", {"-h", "-i", "-v", "-o"});
     EXPECT_EQ(cli.getAnyValue({"-h"}), "value1");
     EXPECT_EQ(cli.getAnyValue({"-i"}), "value1");
     EXPECT_EQ(cli.getAnyValue({"-v"}), "value1");
@@ -367,8 +367,8 @@ TEST(getAllValues, general)
 
     CLI cli;
     cli.setArguments({"MyProgram", "init", "cpp-app", "--path", "value1", "-f", "trueval"});
-    cli.setValidSubcommands({"init"});
-    cli.setValidFlags("init", {"--path", "-f"});
+    cli.addSubcommands({"init"});
+    cli.addFlags("init", {"--path", "-f"});
     EXPECT_EQ(cli.getAllValues(), expected_vals);
     expected_vals = {"cpp-app", "trueval"};
     EXPECT_EQ(cli.getAllValues({"--path"}), expected_vals);
@@ -382,8 +382,8 @@ TEST(getAllValues, multiple_single_flags)
 
     CLI cli;
     cli.setArguments({"MyProgram", "init", "-hiv", "value1", "-o", "value2"});
-    cli.setValidSubcommands({"init"});
-    cli.setValidFlags("init", {"-h", "-i", "-v", "-o"});
+    cli.addSubcommands({"init"});
+    cli.addFlags("init", {"-h", "-i", "-v", "-o"});
     EXPECT_EQ(cli.getAllValues({"-h"}), expected_vals);
     EXPECT_EQ(cli.getAllValues({"-i"}), expected_vals);
     EXPECT_EQ(cli.getAllValues({"-v"}), expected_vals);
@@ -395,7 +395,7 @@ TEST(getValueOf, general)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "--flag=value"});
-    cli.setValidFlags({"--flag"});
+    cli.addFlags({"--flag"});
     EXPECT_EQ(cli.getValueOf("--flag"), "value");
     EXPECT_EQ(cli.getValueOf("--flag", 2), "");
 }
@@ -405,8 +405,8 @@ TEST(getValueOf, multiple_values)
     CLI cli;
     cli.setArguments({"MyProgram", "remote", "add", "val1", "val2", "--flag", "fval1", "fval2", "-h", "hval1", "hval2", "hval3",
     "-m=mval1", "mval2", "mval3", "-f", "ffval1", "ffval2"});
-    cli.setValidSubcommands({"remote add"});
-    cli.setValidFlags("remote add", {"--flag", "-h", "-m", "-f"});
+    cli.addSubcommands({"remote add"});
+    cli.addFlags("remote add", {"--flag", "-h", "-m", "-f"});
     EXPECT_EQ(cli.getValueOf(), "val1");
     EXPECT_EQ(cli.getValueOf(1), "val1");
     EXPECT_EQ(cli.getValueOf(2), "val2");
@@ -424,7 +424,7 @@ TEST(getValueOf, multiple_values)
 
     cli.clear();
     cli.setArguments({"MyProgram", "-hmv=value", "value1", "value2"});
-    cli.setValidFlags({"-h", "-m", "-v"});
+    cli.addFlags({"-h", "-m", "-v"});
     EXPECT_EQ(cli.getValueOf("-h"), "value");
     EXPECT_EQ(cli.getValueOf("-m"), "value");
     EXPECT_EQ(cli.getValueOf("-v"), "value");
@@ -437,7 +437,7 @@ TEST(getValueOf, multiple_flags)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "--flag=value1", "--flag=value2"});
-    cli.setValidFlags({"--flag"});
+    cli.addFlags({"--flag"});
     EXPECT_EQ(cli.getValueOf("--flag"), "value2");
 }
 
@@ -445,14 +445,14 @@ TEST(getValueOf, no_value)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "-hmv"});
-    cli.setValidFlags({"-h", "-m", "-v"});
+    cli.addFlags({"-h", "-m", "-v"});
 }
 
 TEST(getAllValuesOf, general)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "--flag=value"});
-    cli.setValidFlags({"--flag"});
+    cli.addFlags({"--flag"});
     vector<string> flag_val = {"value"};
     EXPECT_EQ(cli.getAllValuesOf("--flag"), flag_val);
 }
@@ -462,8 +462,8 @@ TEST(getAllValuesOf, multiple_values)
     CLI cli;
     cli.setArguments({"MyProgram", "remote", "add", "val1", "val2", "--flag", "fval1", "fval2", "-h", "hval1", "hval2", "hval3",
     "-m=mval1", "mval2", "mval3", "-f", "ffval1", "ffval2"});
-    cli.setValidSubcommands({"remote add"});
-    cli.setValidFlags("remote add", {"--flag", "-h", "-m", "-f"});
+    cli.addSubcommands({"remote add"});
+    cli.addFlags("remote add", {"--flag", "-h", "-m", "-f"});
     vector<string> expected_values = {"val1", "val2"};
     EXPECT_EQ(cli.getAllValuesOf("remote add"), expected_values);
     expected_values = {"fval1", "fval2"};
@@ -488,7 +488,7 @@ TEST(getAllValuesOf, no_value)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "add"});
-    cli.setValidSubcommands({"add"});
+    cli.addSubcommands({"add"});
     vector<string> expected_values;
     EXPECT_EQ(cli.getAllValuesOf("add"), expected_values);
 
@@ -497,7 +497,7 @@ TEST(getAllValuesOf, no_value)
     EXPECT_EQ(cli.getAllValuesOf("add", 0), expected_values);
 
     cli.setArguments({"MyProgram", "add", "-f", "val1"});
-    cli.setValidFlags({"-f"});
+    cli.addFlags({"-f"});
     expected_values = {};
     EXPECT_EQ(cli.getAllValuesOf("-f", 0), expected_values);
 }
@@ -507,14 +507,14 @@ TEST(getActiveFlagsAndValues, general)
     unordered_map<string, vector<string>> expected_values;
     CLI cli;
     cli.setArguments({"MyProgram", "remote", "add", "val1", "val2", "--flag=fval1", "fval2", "-h", "hval1", "hval2"});
-    cli.setValidSubcommands({"remote add", "remote"});
-    cli.setValidFlags("remote add", {"--flag", "-h", "--help"});
+    cli.addSubcommands({"remote add", "remote"});
+    cli.addFlags("remote add", {"--flag", "-h", "--help"});
 
     expected_values = {{"", {"val1", "val2"}}, {"--flag", {"fval1", "fval2"}}, {"-h", {"hval1", "hval2"}}};
     EXPECT_EQ(cli.getActiveFlagsAndValues(), expected_values);
 
     cli.setArguments({"MyProgram", "val1", "val2", "--flag=fval1", "fval2", "-h", "hval1", "hval2"});
-    cli.setValidFlags({"--flag", "-h", "--help"});
+    cli.addFlags({"--flag", "-h", "--help"});
     EXPECT_EQ(cli.getActiveFlagsAndValues(), expected_values);
 
     cli.setArguments({"MyProgram", "--flag=fval1", "fval2", "-h", "hval1", "hval2"});
@@ -530,20 +530,20 @@ TEST(checkers, general)
     EXPECT_THROW(cli.isFlagActive("-g"), CLIException);
     EXPECT_THROW(cli.getFlagPosition("-g"), CLIException);
 
-    cli.setValidFlags({"-g"});
+    cli.addFlags({"-g"});
     EXPECT_EQ(cli.isValidSubcommand("home"), false);
     EXPECT_EQ(cli.isValidFlag("-g"), true);
     EXPECT_EQ(cli.isFlagActive("-g"), true);
     EXPECT_EQ(cli.getFlagPosition("-g"), 2);
 
-    cli.setValidSubcommands({"home", "init"}); // will reset valid flags
+    cli.addSubcommands({"home", "init"}); // will reset valid flags
     EXPECT_EQ(cli.getActiveSubcommand(), "home");
     EXPECT_EQ(cli.isValidFlag("-g"), false);
     EXPECT_THROW(cli.isFlagActive("-g"), CLIException); // because "-g" is not a valid flag of "home"
     EXPECT_THROW(cli.getFlagPosition("-g"), CLIException);
 
-    EXPECT_THROW(cli.setValidFlags("test", {"--help"}), CLIException);
-    cli.setValidFlags("home", {"-g", "--help"});
+    EXPECT_THROW(cli.addFlags("test", {"--help"}), CLIException);
+    cli.addFlags("home", {"-g", "--help"});
     cli.setArguments({"MyProgram", "home", "-g", "--help"});
     EXPECT_EQ(cli.getActiveSubcommand(), "home");
     EXPECT_EQ(cli.isValidFlag("-g"), true);
@@ -559,19 +559,19 @@ TEST(checkers, general)
     EXPECT_THROW(cli.isFlagActive("-g"), CLIException);
     EXPECT_THROW(cli.getFlagPosition("-g"), CLIException);
 
-    cli.setValidFlags("init", {"-g"});
+    cli.addFlags("init", {"-g"});
     EXPECT_EQ(cli.isValidFlag("-g"), true);
     EXPECT_EQ(cli.isFlagActive("-g"), true);
     EXPECT_EQ(cli.getFlagPosition("-g"), 2);
 
-    EXPECT_THROW(cli.setValidFlags("init", {"-h"}), CLIException); // "-h" is not in argument list
+    EXPECT_THROW(cli.addFlags("init", {"-h"}), CLIException); // "-h" is not in argument list
 }
 
 TEST(isFlagActive, multiple_flags)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "remote", "add", "-us", "hello", "--substring", "hi"});
-    cli.setValidFlags({"-u", "--unscramble", "-s", "--substring"});
+    cli.addFlags({"-u", "--unscramble", "-s", "--substring"});
     EXPECT_EQ(cli.isFlagActive({"-u", "-s", "--substring"}), true);
     EXPECT_EQ(cli.isFlagActive({"-u", "--unscramble"}), true);
     EXPECT_EQ(cli.isFlagActive({"--unscramble", "--substring"}), true);
@@ -588,8 +588,8 @@ TEST(clear, general)
 
     CLI cli;
     cli.setArguments({"MyProgram", "remote", "add", "-h", "hello"});
-    cli.setValidSubcommands({"remote", "remote add", "status"});
-    cli.setValidFlags({"-h", "--help", "--force"});
+    cli.addSubcommands({"remote", "remote add", "status"});
+    cli.addFlags({"-h", "--help", "--force"});
     cli.clear();
     EXPECT_EQ(cli.getArguments(), expected_args);
     EXPECT_EQ(cli.getValidSubcommands(), expected_subs);

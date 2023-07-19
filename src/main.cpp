@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     try {
         // cli.setValidSubcommands({"pull", "pull jim hoe"});
         // cli.setValidFlags("push", {"-f"});
-        cli.setValidFlags({"-"});
+        //cli.setValidFlags({"-"});
         
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;

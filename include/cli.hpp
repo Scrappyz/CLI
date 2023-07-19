@@ -391,6 +391,10 @@ class CLI {
 
         std::string getAnyValue(const std::unordered_set<std::string>& excluded_flags, int occurance = 1) const
         {
+            if(occurance < 1) {
+                occurance = 1;
+            }
+
             bool skip_val = false;
             int counter = 1;
             for(int i = getStartPosition(); i < args.size(); i++) {
@@ -619,7 +623,7 @@ class CLI {
             initFlags(active_subcommand); // set the flags for the new subcommand
         }
 
-        void setValidSubcommands(const std::vector<std::string>& valid_subs)
+        void addSubcommands(const std::vector<std::string>& valid_subs)
         {
             clearSubcommands(); // clear old subcommands
             for(int i = 0; i < valid_subs.size(); i++) {
@@ -648,17 +652,17 @@ class CLI {
             }
         }
 
-        void setValidGlobalFlags(const std::vector<std::string>& valid_flags)
+        void addGlobalFlags(const std::vector<std::string>& valid_flags)
         {
 
         }
 
-        void setValidFlags(const std::vector<std::string>& valid_flags)
+        void addFlags(const std::vector<std::string>& valid_flags)
         {
-            setValidFlags("", valid_flags);
+            addFlags("", valid_flags);
         }
 
-        void setValidFlags(const std::string& subcmd, const std::vector<std::string>& valid_flags) // initializes the keys of flags
+        void addFlags(const std::string& subcmd, const std::vector<std::string>& valid_flags) // initializes the keys of flags
         {
             if(!isValidSubcommand(subcmd)) {
                 throw CLIException(__func__, "Invalid subcommand \"" + subcmd + "\"");

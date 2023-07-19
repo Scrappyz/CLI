@@ -1,9 +1,9 @@
-## CLI::setValidSubcommands
+## CLI::addSubcommands
 Defined in header `cli.hpp`
 
 | |
 | --- |
-| void setValidSubcommands(const std::vector\<std::string>& valid_subs) |
+| void addSubcommands(const std::vector\<std::string>& valid_subs) |
 
 Initializes the subcommands the `CLI` object can take.
 
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 {
     CLI cli(argc, argv);
     try {
-        cli.setValidSubcommands({"add", "status", "remote add"});
+        cli.addSubcommands({"add", "status", "remote add"});
         cli.setValidFlags("remote add", {"--tags"});
 
         printSubcommands(cli.getValidSubcommands());
