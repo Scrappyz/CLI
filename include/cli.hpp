@@ -360,7 +360,7 @@ class CLI {
             return subcommands.at(active_subcommand).at(flag);
         }
 
-        std::unordered_set<std::string> getValidSubcommands() const
+        std::unordered_set<std::string> getSubcommands() const
         {
             std::unordered_set<std::string> valid_subcommands;
             for(const auto& i : subcommands) {
@@ -369,7 +369,7 @@ class CLI {
             return valid_subcommands;
         }
 
-        std::unordered_set<std::string> getValidFlags(std::string subcmd = "") const
+        std::unordered_set<std::string> getFlags(std::string subcmd = "") const
         {
             if(subcmd.empty()) {
                 subcmd = active_subcommand;
@@ -393,18 +393,6 @@ class CLI {
             for(const auto& i : subcommands.at(active_subcommand)) {
                 if(i.second >= 0) {
                     flags.insert(i.first);
-                }
-            }
-
-            return flags;
-        }
-
-        std::unordered_map<std::string, int> getActiveFlagsAndPositions() const
-        {
-            std::unordered_map<std::string, int> flags;
-            for(const auto& i : subcommands.at(active_subcommand)) {
-                if(i.second >= 0) {
-                    flags.insert(i);
                 }
             }
 
@@ -638,19 +626,6 @@ class CLI {
             } else {
                 throw CLIException(__func__, "\"" + flag + "\" is neither an active flag or subcommand");
             }
-            return values;
-        }
-
-        std::unordered_map<std::string, std::vector<std::string>> getActiveFlagsAndValues() const
-        {
-            std::unordered_map<std::string, std::vector<std::string>> values;
-            values.insert({"", getAllValuesOf(active_subcommand)});
-            for(const auto& i : subcommands.at(active_subcommand)) {
-                if(i.second >= 0) {
-                    values.insert({i.first, getAllValuesOf(i.first)});
-                }
-            }
-
             return values;
         }
 
