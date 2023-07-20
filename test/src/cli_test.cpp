@@ -374,17 +374,17 @@ TEST(getArgumentAt, concatenation)
     EXPECT_EQ(cli.getArgumentAt(3, 2), "");
 }
 
-TEST(getActiveFlagIn, general)
+TEST(getActiveFlagAmong, general)
 {
     CLI cli;
     cli.setArguments({"MyProgram", "-h", "hi", "-v"});
     cli.addFlags({"-h", "--help", "-v", "--verbose"});
     cli.init();
-    EXPECT_EQ(cli.getActiveFlagIn({"-h", "--help"}), "-h");
-    EXPECT_EQ(cli.getActiveFlagIn({"-v", "--verbose"}), "-v");
+    EXPECT_EQ(cli.getActiveFlagAmong({"-h", "--help"}), "-h");
+    EXPECT_EQ(cli.getActiveFlagAmong({"-v", "--verbose"}), "-v");
 }
 
-TEST(getAllActiveFlagsIn, general)
+TEST(getAllActiveFlagsAmong, general)
 {
     vector<string> expected_flags = {"-h", "--help", "-v"};
 
@@ -392,11 +392,11 @@ TEST(getAllActiveFlagsIn, general)
     cli.setArguments({"MyProgram", "-h", "--help", "-v", "hi"});
     cli.addFlags({"-h", "--help", "-v", "--verbose"});
     cli.init();
-    EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v"}), expected_flags);
-    EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v", "--verbose"}), expected_flags);
+    EXPECT_EQ(cli.getAllActiveFlagsAmong({"-h", "--help", "-v"}), expected_flags);
+    EXPECT_EQ(cli.getAllActiveFlagsAmong({"-h", "--help", "-v", "--verbose"}), expected_flags);
 }
 
-TEST(getAllActiveFlagsIn, multiple_flags)
+TEST(getAllActiveFlagsAmong, multiple_flags)
 {
     vector<string> expected_flags = {"-h", "--help"};
     
@@ -404,7 +404,7 @@ TEST(getAllActiveFlagsIn, multiple_flags)
     cli.setArguments({"MyProgram", "-h", "-h", "--help"});
     cli.addFlags({"-h", "--help", "-v", "--verbose"});
     cli.init();
-    EXPECT_EQ(cli.getAllActiveFlagsIn({"-h", "--help", "-v", "--verbose"}), expected_flags);
+    EXPECT_EQ(cli.getAllActiveFlagsAmong({"-h", "--help", "-v", "--verbose"}), expected_flags);
 }
 
 TEST(getAnyValue, general)
@@ -440,6 +440,22 @@ TEST(getAnyValue, multiple_single_flags)
     EXPECT_EQ(cli.getAnyValue({"-h", "-i", "-v"}), "value2");
 }
 
+TEST(getAnyValue, equal_sign)
+{
+    CLI cli;
+    cli.setArguments({"MyProgram", "value1", "-hiv=value2", "--verbose=value3"});
+    cli.addFlags({"-h", "-i", "-v", "--verbose"});
+    cli.init();
+
+    EXPECT_EQ(cli.getAnyValue(), "value1");
+    EXPECT_EQ(cli.getAnyValue(2), "value2");
+    EXPECT_EQ(cli.getAnyValue(2), "value2");
+    EXPECT_EQ(cli.getAnyValue(2), "value2");
+    EXPECT_EQ(cli.getAnyValue(2, {"-h", "-i"}), "value2");
+    EXPECT_EQ(cli.getAnyValue(2, {"-h", "-i", "-v"}), "value3");
+    EXPECT_EQ(cli.getAnyValue(3), "value3");
+}
+
 TEST(getAllValues, general)
 {
     vector<string> expected_vals = {"cpp-app", "value1", "trueval"};
@@ -470,6 +486,25 @@ TEST(getAllValues, multiple_single_flags)
     EXPECT_EQ(cli.getAllValues({"-v"}), expected_vals);
     expected_vals = {"value2"};
     EXPECT_EQ(cli.getAllValues({"-h", "-i", "-v"}), expected_vals);
+}
+
+TEST(getAllValues, equal_sign)
+{
+    vector<string> expected_vals = {"value1", "value2", "value3", "value4"};
+
+    CLI cli;
+    cli.setArguments({"MyProgram", "init", "value1", "-hiv=value2", "value3", "-q", "value4"});
+    cli.addSubcommands({"init"});
+    cli.addFlags("init", {"-h", "-i", "-v", "-q"});
+    cli.init();
+
+    EXPECT_EQ(cli.getAllValues(), expected_vals);
+    expected_vals = {"value1", "value2"};
+    EXPECT_EQ(cli.getAllValues(2), expected_vals);
+    expected_vals = {"value1", "value4"};
+    EXPECT_EQ(cli.getAllValues({"-h", "-i", "-v"}), expected_vals);
+    expected_vals = {"value1", "value2", "value3", "value4"};
+    EXPECT_EQ(cli.getAllValues({"-h", "-i"}), expected_vals);
 }
 
 TEST(getValueOf, general)

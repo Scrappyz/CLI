@@ -1,9 +1,9 @@
-## CLI::getValidSubcommands
+## CLI::getSubcommands
 Defined in header `cli.hpp`
 
 | |
 | --- |
-| std::unordered_set\<std::string> getValidSubcommands() |
+| std::unordered_set\<std::string> getSubcommands() |
 
 ## Return Value
 Returns all the valid subcommands.
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
         cli.setValidSubcommands({"add", "status", "remote add"});
         cli.setValidFlags("remote add", {"--tags"});
 
-        printSubcommands(cli.getValidSubcommands());
+        printSubcommands(cli.getSubcommands());
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;

@@ -134,7 +134,7 @@ class CLI {
             }
 
             for(int i = start; i < args.size(); i++) { 
-                std::vector<std::string> flags = splitFlags(trim(args[i]));
+                std::vector<std::string> flags = splitFlags(trim(args[i])).first;
 
                 if(flags.empty()) {
                     continue;
@@ -178,8 +178,6 @@ class CLI {
                     } else {
                         trimmed.push_back(' ');
                     }
-                } else if(str[i] == '=') { // turns flags such as "--flag=value" to "--flag"
-                    return trimmed;
                 }
                 trimmed.push_back(str[i]);
                 i++;
@@ -209,26 +207,42 @@ class CLI {
             return getFlagPrefix(flag).size() > 0;
         }
 
-        // parses flags like "-hiv" to {"-h", "-i", "-v"}
-        std::vector<std::string> splitFlags(const std::string& flag) const
+        // parses flags like "-hiv=value" to ({"-h", "-i", "-v"}, "value")
+        std::pair<std::vector<std::string>, std::string> splitFlags(const std::string& flag) const
         {
-            std::vector<std::string> result;
+            std::pair<std::vector<std::string>, std::string> result;
             std::string temp = getFlagPrefix(flag);
 
-            if(temp.empty() || temp.size() == flag.size()) {
+            if(temp.empty() || temp.size() == flag.size() || flag[temp.size()] == '=') {
                 return result;
             } 
             
+            int i = temp.size();
             if(temp == "--") {
-                result.push_back(flag);
-                return result;
+                while(i < flag.size()) {
+                    if(flag[i] == '=') {
+                        i++;
+                        break;
+                    }
+                    temp.push_back(flag[i]);
+                    i++;
+                }
+                result.first.push_back(temp);
+            } else {
+                while(i < flag.size()) {
+                    if(flag[i] == '=') {
+                        i++;
+                        break;
+                    }
+                    temp.push_back(flag[i]);
+                    result.first.push_back(temp);
+                    temp.pop_back();
+                    i++;
+                }
             }
 
-            int i = temp.size();
             while(i < flag.size()) {
-                temp.push_back(flag[i]);
-                result.push_back(temp);
-                temp.pop_back();
+                result.second.push_back(flag[i]);
                 i++;
             }
 
@@ -399,7 +413,7 @@ class CLI {
             return flags;
         }
 
-        std::string getActiveFlagIn(const std::vector<std::string>& flags) const
+        std::string getActiveFlagAmong(const std::vector<std::string>& flags) const
         {
             for(int i = 0; i < flags.size(); i++) {
                 if(isFlagActive(flags[i])) {
@@ -410,7 +424,7 @@ class CLI {
             return std::string();
         }
 
-        std::vector<std::string> getAllActiveFlagsIn(const std::vector<std::string>& flags) const 
+        std::vector<std::string> getAllActiveFlagsAmong(const std::vector<std::string>& flags) const 
         {
             std::vector<std::string> active_flags;
             for(int i = 0; i < flags.size(); i++) {
@@ -436,16 +450,26 @@ class CLI {
             bool skip_val = false;
             int counter = 1;
             for(int i = getStartPosition(); i < args.size(); i++) {
-                if(hasFlagPrefix(args[i])) {
-                    std::vector<std::string> flags = splitFlags(trim(args[i]));
-                    for(int j = 0; j < flags.size(); j++) {
-                        if(excluded_flags.count(flags[j]) < 1) {
+                std::pair<std::vector<std::string>, std::string> flags;
+                std::string value;
+                bool is_flag = hasFlagPrefix(args[i]);
+
+                if(is_flag) {
+                    flags = splitFlags(trim(args[i]));
+                    for(int j = 0; j < flags.first.size(); j++) {
+                        if(excluded_flags.count(flags.first[j]) < 1) {
                             skip_val = false;
                             break;
                         }
                         skip_val = true;
                     }
-                    continue;
+
+                    value = flags.second;
+                    if(value.empty()) {
+                        continue;
+                    }
+                } else {
+                    value = args[i];
                 }
 
                 if(skip_val) {
@@ -453,7 +477,7 @@ class CLI {
                 }
 
                 if(counter == occurance) {
-                    return args[i];
+                    return value;
                 }
                 counter++;
             }
@@ -471,20 +495,30 @@ class CLI {
             std::vector<std::string> result;
             bool skip_val = false;
             for(int i = getStartPosition(); i < args.size(); i++) {
-                if(hasFlagPrefix(args[i])) {
-                    std::vector<std::string> flags = splitFlags(trim(args[i]));
-                    for(int j = 0; j < flags.size(); j++) {
-                        if(excluded_flags.count(flags[j]) < 1) {
+                std::pair<std::vector<std::string>, std::string> flags;
+                std::vector<std::string> values;
+                std::string val;
+                bool is_flag = hasFlagPrefix(args[i]);
+
+                if(is_flag) {
+                    flags = splitFlags(trim(args[i]));
+                    for(int j = 0; j < flags.first.size(); j++) {
+                        if(excluded_flags.count(flags.first[j]) < 1) {
                             skip_val = false;
                             break;
                         }
                         skip_val = true;
                     }
-                    continue;
+
+                    if(!flags.second.empty()) {
+                        val = flags.second;
+                    }
+                } else {
+                    val = args[i];
                 }
 
-                if(!skip_val) {
-                    result.push_back(args[i]);
+                if(!skip_val && !val.empty()) {
+                    result.push_back(val);
                 }
 
                 if(limit >= 0 && result.size() >= limit) {

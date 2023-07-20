@@ -1,9 +1,9 @@
-## CLI::getActiveFlagIn
+## CLI::getActiveFlagAmong
 Defined in header `cli.hpp`
 
 | | 
 | --- |
-| std::string getActiveFlagIn(const std::vector\<std::string>& flags) |
+| std::string getActiveFlagAmong(const std::vector\<std::string>& flags) |
 
 ## Parameters
 `flags` - a list of valid flags
@@ -26,8 +26,8 @@ int main(int argc, char* argv[])
         cli.setValidSubcommands({"add", "status", "remote add"});
         cli.setValidFlags("remote add", {"--tags", "-h", "--help", "-v"});
 
-        std::cout << cli.getActiveFlagIn({"-h", "--tags"}) << std::endl; // "-h" comes first
-        std::cout << cli.getActiveFlagIn({"--tags", "-h"}) << std::endl; // "--tags" comes first
+        std::cout << cli.getActiveFlagAmong({"-h", "--tags"}) << std::endl; // "-h" comes first
+        std::cout << cli.getActiveFlagAmong({"--tags", "-h"}) << std::endl; // "--tags" comes first
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;

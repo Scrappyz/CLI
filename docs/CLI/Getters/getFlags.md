@@ -1,22 +1,28 @@
-## CLI::getActiveFlagsAndPositions
+## CLI::getFlags
 Defined in header `cli.hpp`
 
-| | 
+| |
 | --- |
-| std::unordered_map\<std::string, int> getActiveFlagsAndPositions() |
+| std::unordered_set\<std::string> getFlags(std::string subcmd = "") |
+
+## Parameters
+`subcmd` - the subcommand to get the valid flags of
 
 ## Return Value
-Returns all the flags that are present in the argument list as well as their positions.
+Returns all the valid flags of a given valid subcommand.
+
+## Error
+Throws a `CLIException` error if the given subcommand is not valid.
 
 ## Example
 ```
 #include <iostream>
 #include "cli.hpp"
 
-void printActiveFlagsAndPositions(const std::unordered_map<std::string, int>& flags)
+void printValidFlags(const std::unordered_set<std::string>& flags)
 {
     for(const auto& i : flags) {
-        std::cout << "[\"" << i.first << "\", " << i.second << "]" << std::endl;
+        std::cout << "\"" << i << "\" ";
     }
 }
 
@@ -27,7 +33,7 @@ int main(int argc, char* argv[])
         cli.setValidSubcommands({"add", "status", "remote add"});
         cli.setValidFlags("remote add", {"--tags", "-h", "--help", "-v"});
 
-        printActiveFlagsAndPositions(cli.getActiveFlagsAndPositions());
+        printValidFlags(cli.getFlags());
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;
@@ -44,6 +50,5 @@ CLI.exe remote add --tags mytag -h
 
 Output:
 ```
-["--tags", 3]
-["-h", 5]
+"--tags" "-h" "--help" "-v" 
 ```
