@@ -244,6 +244,42 @@ TEST(addFlags, edge_cases)
     EXPECT_THROW(cli.addFlags({"---"}), CLIException);
 }
 
+TEST(addGlobalFlags, general)
+{
+    unordered_set<string> expected_flags = {"-h", "--help"};
+    CLI cli;
+    cli.setArguments({"MyProgram", "-h", "--help", "-m", "-vi"});
+    cli.addGlobalFlags({"-h", "--help"});
+    EXPECT_EQ(cli.getValidFlags(), expected_flags);
+    
+    cli.addSubcommands({"init", "add"});
+    cli.addGlobalFlags({"-h", "--help"});
+    cli.addFlags("add", {"-v", "--verbose"});
+    expected_flags = {"-h", "--help"};
+    EXPECT_EQ(cli.getValidFlags(), expected_flags);
+    EXPECT_EQ(cli.getValidFlags("init"), expected_flags);
+    expected_flags = {"-h", "--help", "-v", "--verbose"};
+    EXPECT_EQ(cli.getValidFlags("add"), expected_flags);
+}
+
+TEST(addGlobalFlags, excludes)
+{
+    unordered_set<string> expected_flags = {"-h", "--help"};
+    
+    CLI cli;
+    cli.setArguments({"MyProgram", "-h", "--help", "-v", "--verbose"});
+    cli.addSubcommands({"init", "add"});
+    cli.addGlobalFlags({"-h", "--help"}, {"add"});
+    EXPECT_EQ(cli.getValidFlags(), expected_flags);
+    EXPECT_EQ(cli.getValidFlags("init"), expected_flags);
+    expected_flags.clear();
+    EXPECT_EQ(cli.getValidFlags("add"), expected_flags);
+
+    cli.addGlobalFlags({"-v", "--verbose"}, {"", "init"});
+    expected_flags = {"-v", "--verbose"};
+    EXPECT_EQ(cli.getValidFlags("add"), expected_flags);
+}
+
 TEST(initialization, order)
 {
     // initialization order test

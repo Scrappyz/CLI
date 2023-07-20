@@ -749,9 +749,27 @@ class CLI {
             setSubcommands(valid_subs, false);
         }
 
-        void addGlobalFlags(const std::vector<std::string>& valid_flags)
+        void addGlobalFlags(const std::vector<std::string>& valid_flags, const std::unordered_set<std::string>& excludes = {})
         {
+            for(int i = 0; i < valid_flags.size(); i++) {
+                std::string flag = trim(valid_flags[i]);
+                std::string prefix = getFlagPrefix(flag);
 
+                if(prefix.empty() || prefix.size() > 2) {
+                    throw CLIException(__func__, "\"" + flag + "\" does not have a proper prefix");
+                } else if(prefix.size() == 1 && flag.size() > 2) {
+                    throw CLIException(__func__, "\"" + flag + "\" has prefix for a single character format");
+                } else if(prefix.size() == flag.size()) {
+                    throw CLIException(__func__, "\"" + flag + "\" is not a proper flag");
+                }
+
+                for(auto& j : subcommands) {
+                    if(excludes.count(j.first) > 0) {
+                        continue;
+                    }
+                    j.second.insert({flag, -1});
+                }
+            }
         }
 
         void addFlags(const std::vector<std::string>& valid_flags)
