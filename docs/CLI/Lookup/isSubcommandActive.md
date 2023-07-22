@@ -1,9 +1,9 @@
-## CLI::isActiveSubcommand
+## CLI::isSubcommandActive
 Defined in header `cli.hpp`
 
 | |
 | --- |
-| bool isActiveSubcommand(const std::string& subcmd = "") |
+| bool isSubcommandActive(const std::string& subcmd = "") |
 
 Checks if the given subcommand is the active subcommand.
 
@@ -12,6 +12,9 @@ Checks if the given subcommand is the active subcommand.
 
 ## Return Value
 Returns `true` if the given subcommand is the active subcommand, `false` otherwise.
+
+## Notes
+- Passing no string will check if the empty subcommand is active
 
 ## Example
 ```
@@ -28,11 +31,11 @@ int main(int argc, char* argv[])
         cli.setValidFlags("status", {"-v", "--verbose"});
         cli.setValidFlags("remote add", {"--tags", "-h", "--help", "--verbose"});
 
-        std::cout << cli.isActiveSubcommand() << std::endl; // check empty subcommand
-        std::cout << cli.isActiveSubcommand("add") << std::endl;
-        std::cout << cli.isActiveSubcommand("status") << std::endl;
-        std::cout << cli.isActiveSubcommand("remote add") << std::endl;
-        std::cout << cli.isActiveSubcommand("some subcommand") << std::endl;
+        std::cout << cli.isSubcommandActive() << std::endl; // check empty subcommand
+        std::cout << cli.isSubcommandActive("add") << std::endl;
+        std::cout << cli.isSubcommandActive("status") << std::endl;
+        std::cout << cli.isSubcommandActive("remote add") << std::endl;
+        std::cout << cli.isSubcommandActive("some subcommand") << std::endl;
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;
