@@ -68,17 +68,13 @@ class CLI {
             }
         }
 
-        void initFlags(const std::string& subcmd, int start = -1) // initialize values of flags from args
+        void initFlags() // initialize values of flags from args
         {
             if(subcommands.at(active_subcommand).empty()) {
                 return;
             }
 
-            if(start < 0) {
-                start = active_subcommand_end_pos + 1;
-            }
-
-            for(int i = start; i < args.size(); i++) { 
+            for(int i = active_subcommand_end_pos + 1; i < args.size(); i++) { 
                 std::vector<std::string> flags = splitFlags(trim(args[i])).first;
 
                 if(flags.empty()) {
@@ -87,7 +83,7 @@ class CLI {
 
                 for(int j = 0; j < flags.size(); j++) { // something wrong here
                     if(isValidFlag(flags[j])) {
-                        subcommands.at(subcmd)[flags[j]] = i;
+                        subcommands.at(active_subcommand)[flags[j]] = i;
                     } else {
                         throw CLIException(__func__, "\"" + flags[j] + "\" is not a valid flag of the \"" + active_subcommand + "\" subcommand");
                     }
@@ -695,7 +691,7 @@ class CLI {
         void init()
         {
             setActiveSubcommand();
-            initFlags(active_subcommand);
+            initFlags();
         }
 
         void addSubcommands(const std::vector<std::string>& valid_subs)
@@ -777,8 +773,14 @@ class CLI {
 
         void removeGlobalFlags(const std::vector<std::string>& flags, const std::unordered_set<std::string>& excludes = {})
         {
-            for(int i = 0; i < flags.size(); i++) {
-                
+            for(auto& i : subcommands) {
+                if(excludes.count(i.first) > 0) {
+                    continue;
+                }
+
+                for(int j = 0; j < flags.size(); j++) {
+                    i.second.erase(flags[j]);
+                }
             }
         }
         
