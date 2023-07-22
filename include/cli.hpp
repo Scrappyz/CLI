@@ -68,63 +68,6 @@ class CLI {
             }
         }
 
-        void setSubcommands(const std::vector<std::string>& valid_subs, bool clear)
-        {
-            if(clear) {
-                clearSubcommands();
-            }
-            
-            for(int i = 0; i < valid_subs.size(); i++) {
-                std::string temp = trim(valid_subs[i]);
-
-                if(temp.empty() || isValidSubcommand(temp)) {
-                    continue;
-                }
-
-                int max_word_count = 1;
-                for(int j = 0; j < temp.size(); j++) {
-                    if(temp[j] == ' ') {
-                        max_word_count++;
-                    }
-                }
-
-                if(max_word_count > max_subcommand_chain_count) {
-                    max_subcommand_chain_count = max_word_count;
-                }
-
-                subcommands.insert({temp, std::unordered_map<std::string, int>()});
-            }
-        }
-
-        void setFlags(const std::string& subcmd, const std::vector<std::string>& valid_flags, bool clear)
-        {
-            if(!isValidSubcommand(subcmd)) {
-                throw CLIException(__func__, "Invalid subcommand \"" + subcmd + "\"");
-            }
-            
-            if(clear) {
-                subcommands.at(subcmd).clear(); // clear the old flags of the given subcommand
-            }
-
-            for(int i = 0; i < valid_flags.size(); i++) {
-                std::string flag = trim(valid_flags[i]);
-                std::string prefix = getFlagPrefix(flag);
-
-                if(prefix.empty() || prefix.size() > 2) {
-                    subcommands.at(subcmd).clear();
-                    throw CLIException(__func__, "\"" + flag + "\" does not have a proper prefix");
-                } else if(prefix.size() == 1 && flag.size() > 2) {
-                    subcommands.at(subcmd).clear();
-                    throw CLIException(__func__, "\"" + flag + "\" has prefix for a single character format");
-                } else if(prefix.size() == flag.size()) {
-                    subcommands.at(subcmd).clear();
-                    throw CLIException(__func__, "\"" + flag + "\" is not a proper flag");
-                }
-
-                subcommands.at(subcmd).insert({flag, -1});
-            }
-        }
-
         void initFlags(const std::string& subcmd, int start = -1) // initialize values of flags from args
         {
             if(subcommands.at(active_subcommand).empty()) {
@@ -756,8 +699,27 @@ class CLI {
         }
 
         void addSubcommands(const std::vector<std::string>& valid_subs)
-        {
-            setSubcommands(valid_subs, false);
+        {            
+            for(int i = 0; i < valid_subs.size(); i++) {
+                std::string temp = trim(valid_subs[i]);
+
+                if(temp.empty() || isValidSubcommand(temp)) {
+                    continue;
+                }
+
+                int max_word_count = 1;
+                for(int j = 0; j < temp.size(); j++) {
+                    if(temp[j] == ' ') {
+                        max_word_count++;
+                    }
+                }
+
+                if(max_word_count > max_subcommand_chain_count) {
+                    max_subcommand_chain_count = max_word_count;
+                }
+
+                subcommands.insert({temp, std::unordered_map<std::string, int>()});
+            }
         }
 
         void addGlobalFlags(const std::vector<std::string>& valid_flags, const std::unordered_set<std::string>& excludes = {})
@@ -785,12 +747,39 @@ class CLI {
 
         void addFlags(const std::vector<std::string>& valid_flags)
         {
-            setFlags("", valid_flags, false);
+            addFlags("", valid_flags);
         }
 
         void addFlags(const std::string& subcmd, const std::vector<std::string>& valid_flags)
         {
-            setFlags(subcmd, valid_flags, false);
+            if(!isValidSubcommand(subcmd)) {
+                throw CLIException(__func__, "Invalid subcommand \"" + subcmd + "\"");
+            }
+
+            for(int i = 0; i < valid_flags.size(); i++) {
+                std::string flag = trim(valid_flags[i]);
+                std::string prefix = getFlagPrefix(flag);
+
+                if(prefix.empty() || prefix.size() > 2) {
+                    subcommands.at(subcmd).clear();
+                    throw CLIException(__func__, "\"" + flag + "\" does not have a proper prefix");
+                } else if(prefix.size() == 1 && flag.size() > 2) {
+                    subcommands.at(subcmd).clear();
+                    throw CLIException(__func__, "\"" + flag + "\" has prefix for a single character format");
+                } else if(prefix.size() == flag.size()) {
+                    subcommands.at(subcmd).clear();
+                    throw CLIException(__func__, "\"" + flag + "\" is not a proper flag");
+                }
+
+                subcommands.at(subcmd).insert({flag, -1});
+            }
+        }
+
+        void removeGlobalFlags(const std::vector<std::string>& flags, const std::unordered_set<std::string>& excludes = {})
+        {
+            for(int i = 0; i < flags.size(); i++) {
+                
+            }
         }
         
         void clear()
