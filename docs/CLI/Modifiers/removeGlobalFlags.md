@@ -8,7 +8,7 @@ Defined in header `cli.hpp`
 Removes the given flags from all subcommands.
 
 ## Parameters
-`flags` - the flags to remove
+`flags` - the flags to remove \
 `excludes` - excluded subcommands
 
 ## Example

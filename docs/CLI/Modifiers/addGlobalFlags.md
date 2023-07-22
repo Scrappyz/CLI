@@ -8,7 +8,7 @@ Defined in header `cli.hpp`
 Adds the given flags and makes them available for all subcommands.
 
 ## Parameters
-`valid_flags` - the flags to make available
+`valid_flags` - the flags to make available \
 `excludes` - excluded subcommands
 
 ## Error

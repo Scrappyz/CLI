@@ -9,7 +9,7 @@ Defined in header `cli.hpp`
 Removes the flags from the given subcommand.
 
 ## Parameters
-`subcmd` - the subcommand to remove the flags from
+`subcmd` - the subcommand to remove the flags from \
 `flags` - the flags to remove
 
 ## Example
