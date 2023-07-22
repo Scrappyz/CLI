@@ -18,9 +18,11 @@ class CLIException : std::exception {
         CLIException(const std::string& function_name, const std::string& message)
         {
             error_message = "[Error]";
-            if(!function_name.empty()) {
-                error_message.append("[" + function_name + "]");
-            }
+            #ifdef _DEBUG
+                if(!function_name.empty()) {
+                    error_message.append("[" + function_name + "]");
+                }
+            #endif
             error_message.push_back(' ');
             error_message.append(message);
         }
