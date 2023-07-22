@@ -3,10 +3,13 @@ Defined in header `cli.hpp`
 
 | |
 | --- |
-| std::unordered_set\<std::string> getSubcommands() |
+| std::unordered_set\<std::string> getSubcommands(bool include_empty = false) |
+
+## Parameters
+`include_empty` - include empty subcommand
 
 ## Return Value
-Returns all the valid subcommands.
+Returns all the valid subcommands. Excludes the empty subcommand if `include_empty` is false.
 
 ## Notes
 - The empty string that is returned along with the other valid subcommands is the empty subcommand. It is the subcommand that is active when there is no subcommand in the argument list.

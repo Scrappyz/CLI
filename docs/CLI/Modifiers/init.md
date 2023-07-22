@@ -1,3 +1,18 @@
+## CLI::init
+Defined in header `cli.hpp`
+
+| |
+| --- |
+| void init() |
+
+Initializes the available subcommands and flags.
+
+## Error
+Throws a `CLIException` error if:
+- an invalid flag is encountered in the argument list
+
+## Example
+```
 #include <iostream>
 #include "cli.hpp"
 
@@ -45,3 +60,20 @@ int main(int argc, char* argv[])
     
     return 0;
 }
+```
+
+Input:
+```
+CLI.exe status value1 -h -v=true --help
+```
+
+Output:
+```
+========Before initialization========
+Active Subcommand: ""
+[NO ACTIVE FLAGS]
+
+========After initialization========
+Active Subcommand: "status"
+Active Flags: "-h" "--help" "-v"
+```

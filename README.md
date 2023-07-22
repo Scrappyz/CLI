@@ -37,6 +37,7 @@ CLI is a header-only library so all you need to do is:
 ## Usage
 1. **Pass the command-line arguments:** We first pass the command-line arguments into the `CLI` object to initialize its argument list.
 ```
+#include <iostream>
 #include "cli.hpp"
 
 int main(int argc, char* argv[])
@@ -47,6 +48,7 @@ int main(int argc, char* argv[])
 
 2. **Catch Exceptions:** Create a try-catch block that catches a `CLIException` object. (This step is optional)
 ```
+#include <iostream>
 #include "cli.hpp"
 
 int main(int argc, char* argv[])
@@ -63,8 +65,9 @@ int main(int argc, char* argv[])
 }
 ```
 
-3. **Initialize the valid subcommands and flags:** Each subcommand will have its own set of flags. Use the [setValidSubcommands()](docs/CLI/Setters/setValidSubcommands.md) method to declare the valid subcommands and use [setValidFlags()](docs/CLI/Setters/setValidFlags.md) to declare their flags. All flags need to be prefixed with a `-` for single character flags and `--` for string flags. It is important to declare the available subcommands first before setting the available flags to avoid scoping issues. 
+3. **Initialize the available subcommands and flags:** Each subcommand will have its own set of flags. Use the [addSubcommands()](docs/CLI/Modifiers/addSubcommands.md) method to declare the available subcommands and use [addFlags()](docs/CLI/Modifiers/addFlags.md) to declare their flags. All flags need to be prefixed with a `-` for single character flags and `--` for string flags. Once the subcommands and flags have been declared, initialize them with the [init()](docs/CLI/Modifiers/init.md) method.
 ```
+#include <iostream>
 #include "cli.hpp"
 
 int main(int argc, char* argv[])
@@ -72,13 +75,16 @@ int main(int argc, char* argv[])
     CLI cli(argc, argv);
     try {
         // declare the available subcommands in your program
-        cli.setValidSubcommands({"add", "status", "remote add"});
+        cli.addSubcommands({"add", "status", "remote add"});
 
         // declare the available flags for each subcommand
-        cli.setValidFlags({"-h", "--help"}); // flags for empty subcommand
-        cli.setValidFlags("add", {"-h", "--help", "--path"}); // flags for "add" subcommand
-        cli.setValidFlags("status", {"-h", "--help", "-v", "--verbose"}); // flags for "status" subcommand
-        cli.setValidFlags("remote add", {"-f", "--fetch", "--tags"}); // flags for "remote add" subcommand
+        cli.addGlobalFlags({"-h", "--help"}); // flags for all subcommands
+        cli.addFlags("add", {"--path"}); // flags for "add" subcommand
+        cli.addFlags("status", {"-v", "--verbose"}); // flags for "status" subcommand
+        cli.addFlags("remote add", {"-f", "--fetch", "--tags"}); // flags for "remote add" subcommand
+
+        // initialize the subcommands and flags
+        cli.init();
 
         // more code
     } catch(const CLIException& e) {
@@ -92,6 +98,7 @@ int main(int argc, char* argv[])
 
 4. **Use the methods of the `CLI` object to run your program accordingly:** We first store the active subcommand in `subcmd` with [getActiveSubcommand()](docs/CLI/Getters/getActiveSubcommand.md) so we can use it to check which subcommand is active. The active subcommand is the subcommand that is currently in the command-line arguments. The variable `value` and `all_values` will be used to store the values of the command-line arguments. Once the subcommand in the command-line arguments has been determined, we can check the flags that are present in the argument list with [isFlagActive()](docs/CLI/Lookup/isFlagActive.md) and extract its values with either [getValueOf()](docs/CLI/Getters/getValueOf.md) or [getAllValuesOf()](docs/CLI/Getters/getAllValuesOf.md).
 ```
+#include <iostream>
 #include "cli.hpp"
 
 int main(int argc, char* argv[])
@@ -99,13 +106,16 @@ int main(int argc, char* argv[])
     CLI cli(argc, argv);
     try {
         // declare the available subcommands in your program
-        cli.setValidSubcommands({"add", "status", "remote add"});
+        cli.addSubcommands({"add", "status", "remote add"});
 
         // declare the available flags for each subcommand
-        cli.setValidFlags({"-h", "--help"}); // flags for empty subcommand
-        cli.setValidFlags("add", {"-h", "--help", "--path"}); // flags for "add" subcommand
-        cli.setValidFlags("status", {"-h", "--help", "-v", "--verbose"}); // flags for "status" subcommand
-        cli.setValidFlags("remote add", {"-f", "--fetch", "--tags"}); // flags for "remote add" subcommand
+        cli.addGlobalFlags({"-h", "--help"}); // flags for all subcommands
+        cli.addFlags("add", {"--path"}); // flags for "add" subcommand
+        cli.addFlags("status", {"-v", "--verbose"}); // flags for "status" subcommand
+        cli.addFlags("remote add", {"-f", "--fetch", "--tags"}); // flags for "remote add" subcommand
+
+        // initialize the subcommands and flags
+        cli.init();
 
         std::string subcmd = cli.getActiveSubcommand(); // the current subcommand
         std::string value; // will hold a single value of a flag

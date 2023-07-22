@@ -48,6 +48,11 @@ The `CLI` class stores the command-line arguments, the valid subcommands and the
 | | |
 | --- | --- |
 | [addSubcommands](Modifiers/addSubcommands.md) | adds the available subcommands |
+| [removeSubcommands](Modifiers/removeSubcommands.md) | removes the given subcommands |
 | [addGlobalFlags](Modifiers/addGlobalFlags.md) | adds the flags to all subcommands |
 | [addFlags](Modifiers/addFlags.md) | adds the flags to a given subcommand |
+| [removeGlobalFlags](Modifiers/removeGlobalFlags.md) | removes the flags from all subcommands |
+| [removeFlags](Modifiers/removeFlags.md) | removes the flags from the given subcommand |
 | [clear](Modifiers/clear.md) | clears all data in a `CLI` object |
+| [clearSubcommands](Modifiers/clearSubcommands.md) | clears all subcommands |
+| [clearFlags](Modifiers/clearFlags.md) | clears all flags from the given subcommand |

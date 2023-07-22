@@ -87,8 +87,20 @@ TEST(removeSubcommands, general)
     CLI cli;
     cli.addSubcommands({"init", "add", "remote add"});
     EXPECT_EQ(cli.getSubcommands(true), expected_subs);
-    cli.removeSubcommands({"add", "remote add", ""});
+    cli.removeSubcommands({"add", "remote add"});
     expected_subs = {"init", ""};
+    EXPECT_EQ(cli.getSubcommands(true), expected_subs);
+}
+
+TEST(removeSubcommands, removing_empty_subcommand)
+{
+    unordered_set<string> expected_subs = {"init", "add", "remote add", ""};
+
+    CLI cli;
+    cli.addSubcommands({"init", "add", "remote add"});
+    EXPECT_EQ(cli.getSubcommands(true), expected_subs);
+    cli.removeSubcommands({"add", "init", "remote add", ""});
+    expected_subs = {""};
     EXPECT_EQ(cli.getSubcommands(true), expected_subs);
 }
 
