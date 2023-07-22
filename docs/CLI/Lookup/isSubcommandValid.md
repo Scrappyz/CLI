@@ -1,9 +1,9 @@
-## CLI::isValidSubcommand
+## CLI::isSubcommandValid
 Defined in header `cli.hpp`
 
 | |
 | --- |
-| bool isValidSubcommand(const std::string& subcmd) |
+| bool isSubcommandValid(const std::string& subcmd) |
 
 Checks if the given string is a valid subcommand.
 
@@ -28,11 +28,11 @@ int main(int argc, char* argv[])
         cli.setValidFlags("status", {"-v", "--verbose"});
         cli.setValidFlags("remote add", {"--tags", "-h", "--help", "--verbose"});
 
-        std::cout << cli.isValidSubcommand("add") << std::endl;
-        std::cout << cli.isValidSubcommand("status") << std::endl;
-        std::cout << cli.isValidSubcommand("remote add") << std::endl;
-        std::cout << cli.isValidSubcommand("some sub") << std::endl;
-        std::cout << cli.isValidSubcommand("hello") << std::endl;
+        std::cout << cli.isSubcommandValid("add") << std::endl;
+        std::cout << cli.isSubcommandValid("status") << std::endl;
+        std::cout << cli.isSubcommandValid("remote add") << std::endl;
+        std::cout << cli.isSubcommandValid("some sub") << std::endl;
+        std::cout << cli.isSubcommandValid("hello") << std::endl;
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;

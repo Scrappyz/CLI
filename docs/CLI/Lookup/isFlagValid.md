@@ -1,10 +1,10 @@
-## CLI::isValidFlag
+## CLI::isFlagValid
 Defined in header `cli.hpp`
 
 | |
 | --- |
-| bool isValidFlag(const std::string& flag) |
-| bool isValidFlag(const std::string& subcmd, const std::string& flag) |
+| bool isFlagValid(const std::string& flag) |
+| bool isFlagValid(const std::string& subcmd, const std::string& flag) |
 
 Checks if the given flag is a valid flag of a given subcommand.
 
@@ -37,11 +37,11 @@ int main(int argc, char* argv[])
         cli.setValidFlags("status", {"-v", "--verbose"});
         cli.setValidFlags("remote add", {"--tags", "-h", "--help", "--verbose"});
 
-        std::cout << cli.isValidFlag("", "-h") << std::endl;
-        std::cout << cli.isValidFlag("add", "--path") << std::endl;
-        std::cout << cli.isValidFlag("remote add", "--tags") << std::endl;
-        std::cout << cli.isValidFlag("status", "--tags") << std::endl;
-        std::cout << cli.isValidFlag("some subcommand", "-h") << std::endl;
+        std::cout << cli.isFlagValid("", "-h") << std::endl;
+        std::cout << cli.isFlagValid("add", "--path") << std::endl;
+        std::cout << cli.isFlagValid("remote add", "--tags") << std::endl;
+        std::cout << cli.isFlagValid("status", "--tags") << std::endl;
+        std::cout << cli.isFlagValid("some subcommand", "-h") << std::endl;
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;
@@ -57,5 +57,5 @@ Output:
 1
 1
 0
-[Error][isValidFlag] "some subcommand" is not a valid subcommand
+[Error][isFlagValid] "some subcommand" is not a valid subcommand
 ```

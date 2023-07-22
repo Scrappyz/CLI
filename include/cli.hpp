@@ -60,7 +60,7 @@ class CLI {
             std::string temp;
             for(int i = start; i <= chain_end_pos; i++) {
                 temp.append(args[i]);   
-                if(isValidSubcommand(temp)) {
+                if(isSubcommandValid(temp)) {
                     active_subcommand = temp;
                     active_subcommand_end_pos = i;
                 }
@@ -93,7 +93,7 @@ class CLI {
 
         void resetFlags(const std::string& subcmd) // uninitializes all flags of a subcommand
         {
-            if(!isValidSubcommand(subcmd) || subcommands.at(subcmd).empty()) {
+            if(!isSubcommandValid(subcmd) || subcommands.at(subcmd).empty()) {
                 return;
             }
             for(auto& i : subcommands.at(subcmd)) {
@@ -330,7 +330,7 @@ class CLI {
                 subcmd = active_subcommand;
             }
 
-            if(!isValidSubcommand(subcmd)) {
+            if(!isSubcommandValid(subcmd)) {
                 throw CLIException(__func__, "\"" + subcmd + "\" is not a valid subcommand");
             }
 
@@ -621,7 +621,7 @@ class CLI {
         }
 
         // Checkers
-        bool isValidSubcommand(const std::string& subcmd) const
+        bool isSubcommandValid(const std::string& subcmd) const
         {
             return subcommands.count(subcmd) > 0;
         }
@@ -681,7 +681,7 @@ class CLI {
 
         bool isFlagValid(const std::string& subcmd, const std::string& flag) const // checks if flag is valid
         {
-            if(!isValidSubcommand(subcmd)) {
+            if(!isSubcommandValid(subcmd)) {
                 throw CLIException(__func__, "\"" + subcmd + "\" is not a valid subcommand");
             }
             return subcommands.at(subcmd).count(flag) > 0;
@@ -699,7 +699,7 @@ class CLI {
             for(int i = 0; i < valid_subs.size(); i++) {
                 std::string temp = trim(valid_subs[i]);
 
-                if(temp.empty() || isValidSubcommand(temp)) {
+                if(temp.empty() || isSubcommandValid(temp)) {
                     continue;
                 }
 
@@ -748,7 +748,7 @@ class CLI {
 
         void addFlags(const std::string& subcmd, const std::vector<std::string>& valid_flags)
         {
-            if(!isValidSubcommand(subcmd)) {
+            if(!isSubcommandValid(subcmd)) {
                 throw CLIException(__func__, "Invalid subcommand \"" + subcmd + "\"");
             }
 
@@ -791,7 +791,7 @@ class CLI {
 
         void removeFlags(const std::string& subcmd, const std::vector<std::string>& flags)
         {
-            if(!isValidSubcommand(subcmd)) {
+            if(!isSubcommandValid(subcmd)) {
 
             }
 
@@ -817,7 +817,7 @@ class CLI {
 
         void clearFlags(const std::string& subcmd = "")
         {
-            if(!isValidSubcommand(subcmd)) {
+            if(!isSubcommandValid(subcmd)) {
                 throw CLIException(__func__, "\"" + subcmd + "\" is not a valid subcommand");
             }
             subcommands.at(subcmd).clear();

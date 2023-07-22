@@ -711,7 +711,7 @@ TEST(checkers, general)
     cli.clearFlags();
     cli.addFlags({"-g"});
     cli.init();
-    EXPECT_EQ(cli.isValidSubcommand("home"), false);
+    EXPECT_EQ(cli.isSubcommandValid("home"), false);
     EXPECT_EQ(cli.isFlagValid("-g"), true);
     EXPECT_EQ(cli.isFlagActive("-g"), true);
     EXPECT_EQ(cli.getFlagPosition("-g"), 2);

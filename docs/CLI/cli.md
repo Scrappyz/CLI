@@ -34,21 +34,21 @@ The `CLI` class stores the command-line arguments, the valid subcommands and the
 | | |
 | --- | --- |
 | [setArguments](Setters/setArguments.md) | initializes the argument list |
-| [addSubcommands](Modifiers/addSubcommands.md) | adds the available subcommands |
-| [addGlobalFlags](Modifiers/addGlobalFlags.md) | adds the flags to all subcommands |
-| [addFlags](Modifiers/addFlags.md) | adds the flags to a given subcommand |
 
 ## Lookup
 | | |
 | --- | --- |
-| [isValidSubcommand](Lookup/isValidSubcommand.md) | checks if a given string is a valid subcommand |
+| [isSubcommandValid](Lookup/isSubcommandValid.md) | checks if a given string is a valid subcommand |
 | [isActiveSubcommand](Lookup/isActiveSubcommand.md) | checks if a given string is the current active subcommand |
 | [noActiveSubcommand](Lookup/noActiveSubcommand.md) | checks if no subcommand is active |
 | [isFlagActive](Lookup/isFlagActive.md) | checks if a given flag or atleast one flag in a given list of flags is present in the argument list |
 | [areFlagsActive](Lookup/areFlagsActive.md) | checks if all the given flags are active |
-| [isValidFlag](Lookup/isValidFlag.md) | checks if a given flag is a valid flag of a given subcommand |
+| [isFlagValid](Lookup/isFlagValid.md) | checks if a given flag is a valid flag of a given subcommand |
 
 ## Modifiers
 | | |
 | --- | --- |
+| [addSubcommands](Modifiers/addSubcommands.md) | adds the available subcommands |
+| [addGlobalFlags](Modifiers/addGlobalFlags.md) | adds the flags to all subcommands |
+| [addFlags](Modifiers/addFlags.md) | adds the flags to a given subcommand |
 | [clear](Modifiers/clear.md) | clears all data in a `CLI` object |
