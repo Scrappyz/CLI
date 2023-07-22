@@ -279,6 +279,37 @@ TEST(addGlobalFlags, excludes)
     EXPECT_EQ(cli.getFlags("add"), expected_flags);
 }
 
+TEST(removeGlobalFlags, general)
+{
+    unordered_set<string> expected_flags = {"-h", "--help", "-v", "--verbose"};
+
+    CLI cli;
+    cli.setArguments({"MyProgram", "init", "-h", "--help", "-v", "--verbose"});
+    cli.addSubcommands({"init", "add", "remote add"});
+    cli.addGlobalFlags({"-h", "--help", "-v", "--verbose"});
+    EXPECT_EQ(cli.getFlags(), expected_flags);
+    cli.removeGlobalFlags({"-h", "--help", "-v", "--verbose", "4"});
+    expected_flags.clear();
+    EXPECT_EQ(cli.getFlags(), expected_flags);
+}
+
+TEST(removeGlobalFlags, excludes)
+{
+    unordered_set<string> expected_flags = {"-h", "--help", "-v", "--verbose"};
+
+    CLI cli;
+    cli.setArguments({"MyProgram", "init", "-h", "--help", "-v", "--verbose"});
+    cli.addSubcommands({"init", "add", "remote add"});
+    cli.addGlobalFlags({"-h", "--help", "-v", "--verbose"});
+    EXPECT_EQ(cli.getFlags(), expected_flags);
+    cli.removeGlobalFlags({"-h", "--help", "-v", "--verbose", "4"}, {"init", "remote add", "rr"});
+    EXPECT_EQ(cli.getFlags("remote add"), expected_flags);
+    EXPECT_EQ(cli.getFlags("init"), expected_flags);
+    expected_flags.clear();
+    EXPECT_EQ(cli.getFlags(), expected_flags);
+    EXPECT_EQ(cli.getFlags("add"), expected_flags);
+}
+
 TEST(initialization, order)
 {
     // initialization order test
