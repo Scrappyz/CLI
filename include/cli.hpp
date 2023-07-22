@@ -82,7 +82,7 @@ class CLI {
                 } 
 
                 for(int j = 0; j < flags.size(); j++) { // something wrong here
-                    if(isValidFlag(flags[j])) {
+                    if(isFlagValid(flags[j])) {
                         subcommands.at(active_subcommand)[flags[j]] = i;
                     } else {
                         throw CLIException(__func__, "\"" + flags[j] + "\" is not a valid flag of the \"" + active_subcommand + "\" subcommand");
@@ -502,7 +502,7 @@ class CLI {
             }
 
             int counter = 1;
-            if(isValidFlag(flag)) {
+            if(isFlagValid(flag)) {
                 int flag_pos = subcommands.at(active_subcommand).at(flag);
                 if(flag_pos < 0) {
                     throw CLIException(__func__, "\"" + flag + "\" is not in the argument list");
@@ -573,7 +573,7 @@ class CLI {
                 return values;
             }
 
-            if(isValidFlag(flag)) {
+            if(isFlagValid(flag)) {
                 int flag_pos = subcommands.at(active_subcommand).at(flag);
                 if(flag_pos < 0) {
                     throw CLIException(__func__, "Flag \"" + flag + "\" is not in the argument list");
@@ -674,12 +674,12 @@ class CLI {
             return true;
         }
 
-        bool isValidFlag(const std::string& flag) const 
+        bool isFlagValid(const std::string& flag) const 
         {
             return subcommands.at(active_subcommand).count(flag) > 0;
         }
 
-        bool isValidFlag(const std::string& subcmd, const std::string& flag) const // checks if flag is valid
+        bool isFlagValid(const std::string& subcmd, const std::string& flag) const // checks if flag is valid
         {
             if(!isValidSubcommand(subcmd)) {
                 throw CLIException(__func__, "\"" + subcmd + "\" is not a valid subcommand");
@@ -781,6 +781,22 @@ class CLI {
                 for(int j = 0; j < flags.size(); j++) {
                     i.second.erase(flags[j]);
                 }
+            }
+        }
+
+        void removeFlags(const std::vector<std::string>& flags)
+        {
+            removeFlags("", flags);
+        }
+
+        void removeFlags(const std::string& subcmd, const std::vector<std::string>& flags)
+        {
+            if(!isValidSubcommand(subcmd)) {
+
+            }
+
+            for(int i = 0; i < flags.size(); i++) {
+                subcommands.at(subcmd).erase(flags[i]);
             }
         }
         

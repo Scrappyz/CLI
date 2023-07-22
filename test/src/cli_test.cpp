@@ -88,7 +88,7 @@ TEST(addFlags, general)
     cli.addSubcommands({"push"});
     cli.addFlags("push", {"-f"});
     cli.init();
-    EXPECT_EQ(cli.isValidFlag("-f"), true);
+    EXPECT_EQ(cli.isFlagValid("-f"), true);
     EXPECT_EQ(cli.isFlagActive("-f"), true);
 
     cli.addSubcommands({"pull", "pull jim hoe"});
@@ -104,7 +104,7 @@ TEST(addFlags, general)
     EXPECT_EQ(cli.getActiveSubcommand(), "pull jim hoe");
     cli.addFlags("pull jim hoe", {"-f"});
     EXPECT_THROW(cli.init(), CLIException);
-    EXPECT_EQ(cli.isValidFlag("-f"), true);
+    EXPECT_EQ(cli.isFlagValid("-f"), true);
     EXPECT_EQ(cli.isFlagActive("-f"), false);
 }
 
@@ -704,7 +704,7 @@ TEST(checkers, general)
     CLI cli;
     cli.setArguments({"MyProgram", "home", "-g"});
     cli.init();
-    EXPECT_EQ(cli.isValidFlag("-g"), false);
+    EXPECT_EQ(cli.isFlagValid("-g"), false);
     EXPECT_THROW(cli.isFlagActive("-g"), CLIException);
     EXPECT_THROW(cli.getFlagPosition("-g"), CLIException);
 
@@ -712,14 +712,14 @@ TEST(checkers, general)
     cli.addFlags({"-g"});
     cli.init();
     EXPECT_EQ(cli.isValidSubcommand("home"), false);
-    EXPECT_EQ(cli.isValidFlag("-g"), true);
+    EXPECT_EQ(cli.isFlagValid("-g"), true);
     EXPECT_EQ(cli.isFlagActive("-g"), true);
     EXPECT_EQ(cli.getFlagPosition("-g"), 2);
 
     cli.addSubcommands({"home", "init"}); // will reset valid flags
     cli.init();
     EXPECT_EQ(cli.getActiveSubcommand(), "home");
-    EXPECT_EQ(cli.isValidFlag("-g"), false);
+    EXPECT_EQ(cli.isFlagValid("-g"), false);
     EXPECT_THROW(cli.isFlagActive("-g"), CLIException); // because "-g" is not a valid flag of "home"
     EXPECT_THROW(cli.getFlagPosition("-g"), CLIException);
 
@@ -728,8 +728,8 @@ TEST(checkers, general)
     cli.setArguments({"MyProgram", "home", "-g", "--help"});
     cli.init();
     EXPECT_EQ(cli.getActiveSubcommand(), "home");
-    EXPECT_EQ(cli.isValidFlag("-g"), true);
-    EXPECT_EQ(cli.isValidFlag("--help"), true);
+    EXPECT_EQ(cli.isFlagValid("-g"), true);
+    EXPECT_EQ(cli.isFlagValid("--help"), true);
     EXPECT_EQ(cli.isFlagActive("-g"), true);
     EXPECT_EQ(cli.isFlagActive("--help"), true);
     EXPECT_EQ(cli.getFlagPosition("-g"), 2);
@@ -738,13 +738,13 @@ TEST(checkers, general)
     cli.setArguments({"MyProgram", "init", "-g", "this"});
     cli.init();
     EXPECT_EQ(cli.getActiveSubcommand(), "init");
-    EXPECT_EQ(cli.isValidFlag("-g"), false);
+    EXPECT_EQ(cli.isFlagValid("-g"), false);
     EXPECT_THROW(cli.isFlagActive("-g"), CLIException);
     EXPECT_THROW(cli.getFlagPosition("-g"), CLIException);
 
     cli.addFlags("init", {"-g"});
     cli.init();
-    EXPECT_EQ(cli.isValidFlag("-g"), true);
+    EXPECT_EQ(cli.isFlagValid("-g"), true);
     EXPECT_EQ(cli.isFlagActive("-g"), true);
     EXPECT_EQ(cli.getFlagPosition("-g"), 2);
 }
