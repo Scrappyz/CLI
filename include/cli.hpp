@@ -315,10 +315,13 @@ class CLI {
             return subcommands.at(active_subcommand).at(flag);
         }
 
-        std::unordered_set<std::string> getSubcommands() const
+        std::unordered_set<std::string> getSubcommands(bool include_empty = false) const
         {
             std::unordered_set<std::string> valid_subcommands;
             for(const auto& i : subcommands) {
+                if(!include_empty && i.first.empty()) {
+                    continue;
+                }
                 valid_subcommands.insert(i.first);
             }
             return valid_subcommands;
@@ -713,6 +716,16 @@ class CLI {
             }
         }
 
+        void removeSubcommands(const std::vector<std::string>& subcmds)
+        {
+            for(int i = 0; i < subcmds.size(); i++) {
+                if(subcmds[i].empty()) {
+                    continue;
+                }
+                subcommands.erase(subcmds[i]);
+            }
+        }
+
         void addGlobalFlags(const std::vector<std::string>& valid_flags, const std::unordered_set<std::string>& excludes = {})
         {
             for(int i = 0; i < valid_flags.size(); i++) {
@@ -752,13 +765,10 @@ class CLI {
                 std::string prefix = getFlagPrefix(flag);
 
                 if(prefix.empty() || prefix.size() > 2) {
-                    subcommands.at(subcmd).clear();
                     throw CLIException(__func__, "\"" + flag + "\" does not have a proper prefix");
                 } else if(prefix.size() == 1 && flag.size() > 2) {
-                    subcommands.at(subcmd).clear();
                     throw CLIException(__func__, "\"" + flag + "\" has prefix for a single character format");
                 } else if(prefix.size() == flag.size()) {
-                    subcommands.at(subcmd).clear();
                     throw CLIException(__func__, "\"" + flag + "\" is not a proper flag");
                 }
 

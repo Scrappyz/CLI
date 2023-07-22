@@ -10,7 +10,7 @@ TEST(setArguments, general)
     cli.setArguments({"MyProgram", "remote", "add", "origin", "-h", "-o"});
     unordered_set<string> expected_sub = {""};
     cli.init();
-    EXPECT_EQ(cli.getSubcommands(), expected_sub);
+    EXPECT_EQ(cli.getSubcommands(true), expected_sub);
     EXPECT_EQ(cli.getActiveSubcommand(), "");
     cli.addSubcommands({"remote", "add", "origin"});
     cli.init();
@@ -65,19 +65,31 @@ TEST(addSubcommands, general)
 
     CLI cli({"MyProgram", "remote", "add", "--origin"});
     cli.addSubcommands({"pull", "push", "remote add"});
-    EXPECT_EQ(cli.getSubcommands(), expected_subcmd);
+    EXPECT_EQ(cli.getSubcommands(true), expected_subcmd);
 
     cli.addSubcommands({"", ""});
-    EXPECT_EQ(cli.getSubcommands(), expected_subcmd);
+    EXPECT_EQ(cli.getSubcommands(true), expected_subcmd);
 
     cli.addSubcommands({"", "  hello", "   hi   ", "boi   "});
     expected_subcmd = {"pull", "push", "remote add", "", "hello", "hi", "boi"};
-    EXPECT_EQ(cli.getSubcommands(), expected_subcmd);
+    EXPECT_EQ(cli.getSubcommands(true), expected_subcmd);
 
     cli.clearSubcommands();
     cli.addSubcommands({"init", "add"});
     expected_subcmd = {"init", "add", ""};
-    EXPECT_EQ(cli.getSubcommands(), expected_subcmd);
+    EXPECT_EQ(cli.getSubcommands(true), expected_subcmd);
+}
+
+TEST(removeSubcommands, general)
+{
+    unordered_set<string> expected_subs = {"init", "add", "remote add", ""};
+
+    CLI cli;
+    cli.addSubcommands({"init", "add", "remote add"});
+    EXPECT_EQ(cli.getSubcommands(true), expected_subs);
+    cli.removeSubcommands({"add", "remote add", ""});
+    expected_subs = {"init", ""};
+    EXPECT_EQ(cli.getSubcommands(true), expected_subs);
 }
 
 TEST(addFlags, general)
@@ -94,7 +106,7 @@ TEST(addFlags, general)
     cli.addSubcommands({"pull", "pull jim hoe"});
     expected_sub = {"pull", "pull jim hoe", "", "push"};
     cli.init();
-    EXPECT_EQ(cli.getSubcommands(), expected_sub);
+    EXPECT_EQ(cli.getSubcommands(true), expected_sub);
     cli.addFlags("push", {"-f"});
     cli.init();
     EXPECT_EQ(cli.getActiveSubcommand(), "push");
@@ -338,7 +350,7 @@ TEST(initialization, order)
     cli.init();
     EXPECT_EQ(cli.getArguments(), expected_args);
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add");
-    EXPECT_EQ(cli.getSubcommands(), expected_subs);
+    EXPECT_EQ(cli.getSubcommands(true), expected_subs);
     EXPECT_EQ(cli.areFlagsActive({"-h", "--output"}), true);
 
     // subcommands -> args -> flags
@@ -349,7 +361,7 @@ TEST(initialization, order)
     cli.init();
     EXPECT_EQ(cli.getArguments(), expected_args);
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add");
-    EXPECT_EQ(cli.getSubcommands(), expected_subs);
+    EXPECT_EQ(cli.getSubcommands(true), expected_subs);
     EXPECT_EQ(cli.areFlagsActive({"-h", "--output"}), true);
 
     // flags -> subcommands -> args
@@ -360,7 +372,7 @@ TEST(initialization, order)
     cli.init();
     EXPECT_EQ(cli.getArguments(), expected_args);
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add");
-    EXPECT_EQ(cli.getSubcommands(), expected_subs);
+    EXPECT_EQ(cli.getSubcommands(true), expected_subs);
     EXPECT_THROW(cli.areFlagsActive({"-h", "--output"}), CLIException);
 
     // flags -> args -> subcommands
@@ -371,7 +383,7 @@ TEST(initialization, order)
     cli.init();
     EXPECT_EQ(cli.getArguments(), expected_args);
     EXPECT_EQ(cli.getActiveSubcommand(), "remote add");
-    EXPECT_EQ(cli.getSubcommands(), expected_subs);
+    EXPECT_EQ(cli.getSubcommands(true), expected_subs);
     EXPECT_THROW(cli.areFlagsActive({"-h", "--output"}), CLIException);
 }
 
@@ -789,6 +801,6 @@ TEST(clear, general)
     cli.addFlags({"-h", "--help", "--force"});
     cli.clear();
     EXPECT_EQ(cli.getArguments(), expected_args);
-    EXPECT_EQ(cli.getSubcommands(), expected_subs);
+    EXPECT_EQ(cli.getSubcommands(true), expected_subs);
     EXPECT_EQ(cli.getActiveSubcommand(), expected_active_sub);
 }
