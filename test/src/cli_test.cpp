@@ -310,6 +310,20 @@ TEST(removeGlobalFlags, excludes)
     EXPECT_EQ(cli.getFlags("add"), expected_flags);
 }
 
+TEST(removeFlags, general)
+{
+    unordered_set<string> expected_flags = {"-h", "--help", "-v", "--verbose"};
+
+    CLI cli;
+    cli.setArguments({"MyProgram", "init", "-h", "--help"});
+    cli.addSubcommands({"init", "add", "remote add"});
+    cli.addGlobalFlags({"-h", "--help", "-v", "--verbose"});
+    EXPECT_EQ(cli.getFlags(), expected_flags);
+    cli.removeFlags({"-h", "-v", "-k"});
+    expected_flags = {"--help", "--verbose"};
+    EXPECT_EQ(cli.getFlags(), expected_flags);
+}
+
 TEST(initialization, order)
 {
     // initialization order test
