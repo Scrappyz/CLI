@@ -20,24 +20,9 @@ void print(const CLI& cli)
 int main(int argc, char* argv[])
 {
     CLI cli(argc, argv);
+    std::string name = cli.getProgramName();
     try {
-        // declare the available subcommands in your program
-        cli.addSubcommands({"add", "status", "remote add"});
-
-        // declare the available flags for each subcommand
-        cli.addGlobalFlags({"-h", "--help"}); // flags for all subcommands
-        cli.addFlags("add", {"--path"}); // flags for "add" subcommand
-        cli.addFlags("status", {"-v", "--verbose"}); // flags for "status" subcommand
-        cli.addFlags("remote add", {"-f", "--fetch", "--tags"}); // flags for "remote add" subcommand
-
-        std::cout << "========Before initialization========" << std::endl;
-        print(cli);
-
-        // initialize subcommands and flags
-        cli.init();
-
-        std::cout << "\n========After initialization========" << std::endl;
-        print(cli);
+        std::cout << name << std::endl;
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;

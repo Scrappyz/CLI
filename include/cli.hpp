@@ -209,7 +209,7 @@ class CLI {
         }
 
         // Getters
-        std::string getProgramName() const
+        std::string getProgramName(bool extension = true) const
         {
             if(args.empty()) {
                 throw CLIException(__func__, "Argument list is empty");
@@ -219,7 +219,7 @@ class CLI {
             int start = 0;
             int end = args[0].size()-1;
             for(int i = args[0].size()-1; i >= 0; i--) {
-                if(args[0][i] == '.' && end >= args[0].size()-1) {
+                if(!extension && args[0][i] == '.' && end >= args[0].size()-1) {
                     end = i - 1;
                 } else if(args[0][i] == '\\' || args[0][i] == '/') {
                     start = i + 1;
