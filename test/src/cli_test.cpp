@@ -405,13 +405,24 @@ TEST(getProgramName, general)
     cli.setArguments({"myprogram", "subcommand"});
     EXPECT_EQ(cli.getProgramName(), "myprogram");
     cli.setArguments({"myprogram.exe", "subcommand"});
-    EXPECT_EQ(cli.getProgramName(), "myprogram");
+    EXPECT_EQ(cli.getProgramName(), "myprogram.exe");
     cli.setArguments({"path/to/myprogram", "subcommand"});
     EXPECT_EQ(cli.getProgramName(), "myprogram");
     cli.setArguments({"path/to/myprogram.exe", "subcommand"});
-    EXPECT_EQ(cli.getProgramName(), "myprogram");
+    EXPECT_EQ(cli.getProgramName(), "myprogram.exe");
     cli.setArguments({"my.program.exe"});
-    EXPECT_EQ(cli.getProgramName(), "my.program");
+    EXPECT_EQ(cli.getProgramName(), "my.program.exe");
+    
+    cli.setArguments({"myprogram"});
+    EXPECT_EQ(cli.getProgramName(false), "myprogram");
+    cli.setArguments({"myprogram.exe"});
+    EXPECT_EQ(cli.getProgramName(false), "myprogram");
+    cli.setArguments({"path/to/myprogram", "subcommand"});
+    EXPECT_EQ(cli.getProgramName(false), "myprogram");
+    cli.setArguments({"path/to/myprogram.exe", "subcommand"});
+    EXPECT_EQ(cli.getProgramName(false), "myprogram");
+    cli.setArguments({"my.program.exe"});
+    EXPECT_EQ(cli.getProgramName(false), "my.program");
 }
 
 TEST(getArguments, general)
