@@ -20,9 +20,9 @@ void print(const CLI& cli)
 int main(int argc, char* argv[])
 {
     CLI cli(argc, argv);
-    std::string name = cli.getProgramName();
     try {
-        std::cout << name << std::endl;
+        cli.addSubcommands({"test"});
+        cli.init();
     } catch(const CLIException& e) {
         std::cout << e.what() << std::endl;
         return 1;

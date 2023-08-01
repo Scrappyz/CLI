@@ -640,7 +640,8 @@ class CLI {
         bool isFlagActive(const std::string& flag) const
         {
             if(subcommands.at(active_subcommand).count(flag) < 1) {
-                throw CLIException(__func__, "\"" + flag + "\" is not a valid flag of \"" + active_subcommand + "\"");
+                std::string append = active_subcommand.empty() ? "" : " of the \"" + active_subcommand + "\" subcommand";
+                throw CLIException(__func__, "\"" + flag + "\" is not a valid flag" + append);
             }
             return subcommands.at(active_subcommand).at(flag) >= 0;
         }
