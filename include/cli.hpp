@@ -1,5 +1,5 @@
 // Github Repo: https://github.com/Scrappyz/CLI
-// Version: 1.1.0
+// Version: 1.1.1
 #pragma once
 
 #include <string>
@@ -83,7 +83,7 @@ class CLI {
                     continue;
                 } 
 
-                for(int j = 0; j < flags.size(); j++) { // something wrong here
+                for(int j = 0; j < flags.size(); j++) {
                     if(isFlagValid(flags[j])) {
                         subcommands.at(active_subcommand)[flags[j]] = i;
                     } else {
