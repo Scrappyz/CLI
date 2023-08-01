@@ -1,6 +1,7 @@
 *
 !README.md
 !CMakeLists.txt
+!CHANGELOG.md
 !docs/
 !docs/**
 !include/
